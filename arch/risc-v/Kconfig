@@ -23,6 +23,12 @@ config ARCH_CHIP_GAP8
 		GreenwavesTechnologies GAP8 features a 1+8-core RI5CY DSP-like
 		processor, which originally comes from the ETH PULP platform.
 
+config ARCH_CHIP_K210
+	bool "NEXT K210"
+	select ARCH_RV64GC
+	---help---
+		NEXT RISC-V K210 (RISC-V RV64GC cores).
+
 endchoice
 
 config ARCH_RV32I
@@ -30,6 +36,10 @@ config ARCH_RV32I
 	default n
 
 config ARCH_RV32IM
+	bool
+	default n
+
+config ARCH_RV64GC
 	bool
 	default n
 
@@ -41,6 +51,7 @@ config ARCH_CHIP
 	string
 	default "nr5m100"	if ARCH_CHIP_NR5
 	default "gap8"		if ARCH_CHIP_GAP8
+	default "k210"		if ARCH_CHIP_K210
 
 config NR5_MPU
 	bool "MPU support"
@@ -55,11 +66,17 @@ config NR5_MPU
 if ARCH_RV32IM
 source arch/risc-v/src/rv32im/Kconfig
 endif
+if ARCH_RV64GC
+source arch/risc-v/src/rv64gc/Kconfig
+endif
 if ARCH_CHIP_NR5
 source arch/risc-v/src/nr5m100/Kconfig
 endif
 if ARCH_CHIP_GAP8
 source arch/risc-v/src/gap8/Kconfig
+endif
+if ARCH_CHIP_K210
+source arch/risc-v/src/k210/Kconfig
 endif
 
 endif

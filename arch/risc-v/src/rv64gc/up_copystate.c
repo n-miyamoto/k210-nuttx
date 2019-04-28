@@ -1,10 +1,8 @@
 /****************************************************************************
- * arch/risc-v/include/syscall.h
+ * arch/risc-v/src/rv32im/up_copystate.c
  *
  *   Copyright (C) 2011 Gregory Nutt. All rights reserved.
  *   Author: Gregory Nutt <gnutt@nuttx.org>
- *
- *   Modified 2016 by Ken Pettit for RISC-V architecture.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,59 +33,54 @@
  *
  ****************************************************************************/
 
-/* This file should never be included directed but, rather, only indirectly
- * through include/syscall.h or include/sys/sycall.h
- */
-
-#ifndef __ARCH_RISCV_INCLUDE_SYSCALL_H
-#define __ARCH_RISCV_INCLUDE_SYSCALL_H
-
 /****************************************************************************
  * Included Files
  ****************************************************************************/
 
-/* Include RISC-V architecture-specific syscall macros */
+#include <nuttx/config.h>
 
-#ifdef CONFIG_ARCH_RV32IM
-# include <arch/rv32im/syscall.h>
-#elif defined CONFIG_ARCH_RV64GC
-# include <arch/rv64gc/syscall.h>
-#endif
+#include <stdint.h>
+#include <arch/irq.h>
+
+#include "up_internal.h"
 
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
 
 /****************************************************************************
- * Public Types
+ * Private Data
  ****************************************************************************/
 
 /****************************************************************************
- * Inline functions
+ * Private Functions
  ****************************************************************************/
 
 /****************************************************************************
- * Public Data
+ * Public Functions
  ****************************************************************************/
 
 /****************************************************************************
- * Public Function Prototypes
+ * Name: up_copystate
  ****************************************************************************/
 
-#ifndef __ASSEMBLY__
-#ifdef __cplusplus
-#define EXTERN extern "C"
-extern "C"
+/* A little faster than most memcpy's */
+
+void up_copystate(uint32_t *dest, uint32_t *src)
 {
-#else
-#define EXTERN extern
-#endif
+  int i;
 
-#undef EXTERN
-#ifdef __cplusplus
+  /* In the MIPS model, the state is copied from the stack to the TCB,
+   * but only a reference is passed to get the state from the TCB.  So the
+   * following check avoids copying the TCB save area onto itself:
+   */
+
+  if (src != dest)
+    {
+      for (i = 0; i < XCPTCONTEXT_REGS; i++)
+        {
+          *dest++ = *src++;
+        }
+    }
 }
-#endif
-#endif
-
-#endif /* __ARCH_RISCV_INCLUDE_SYSCALL_H */
 

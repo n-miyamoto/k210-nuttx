@@ -119,7 +119,6 @@ config ARCH_BOARD_EA3152
 		an NXP LPC3152 MCU. This OS is built with the arm-nuttx-elf toolchain*.
 		STATUS:  This port is has not be exercised well, but since it is
 		a simple derivative of the ea3131, it should be fully functional.
-
 config ARCH_BOARD_EAGLE100
 	bool "Micromint Eagle-100 Development board"
 	depends on ARCH_CHIP_LM3S6918
@@ -855,6 +854,15 @@ config ARCH_BOARD_NR5M100_NEXYS4
 	---help---
 		This is the port NuttX to the NEXT RISC-V processor runnining on a Digilent
 		Nexys-4 (non DDR version) FPGA board.
+
+config ARCH_BOARD_MAIX_BIT
+	bool "RISC-V k210 on MAixBiT board"
+	depends on ARCH_CHIP_K210
+	select ARCH_HAVE_LEDS
+	select ARCH_HAVE_BUTTONS
+	select ARCH_HAVE_IRQBUTTONS
+	---help---
+		This is the port NuttX to the RISC-V K210 processor on MAixBiT board.
 
 config ARCH_BOARD_NUCLEO_144
 	bool "STMicro NUCLEO-144"
@@ -1882,6 +1890,7 @@ config ARCH_BOARD
 	default "nucleo-l496zg"            if ARCH_BOARD_NUCLEO_L496ZG
 	default "nutiny-nuc120"            if ARCH_BOARD_NUTINY_NUC120
 	default "nr5m100-nexys4"           if ARCH_BOARD_NR5M100_NEXYS4
+	default "maix-bit"                  if ARCH_BOARD_MAIX_BIT
 	default "olimex-efm32g880f128-stk" if ARCH_BOARD_OLIMEX_EFM32G880F128_STK
 	default "olimex-lpc1766stk"        if ARCH_BOARD_LPC1766STK
 	default "olimex-lpc2378"           if ARCH_BOARD_OLIMEXLPC2378

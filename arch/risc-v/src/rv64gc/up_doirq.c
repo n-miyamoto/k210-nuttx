@@ -1,10 +1,8 @@
 /****************************************************************************
- * arch/risc-v/include/syscall.h
+ * arch/risc-v/src/rv32im/up_doirq.c
  *
- *   Copyright (C) 2011 Gregory Nutt. All rights reserved.
+ *   Copyright (C) 2011, 2014-2015 Gregory Nutt. All rights reserved.
  *   Author: Gregory Nutt <gnutt@nuttx.org>
- *
- *   Modified 2016 by Ken Pettit for RISC-V architecture.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,35 +33,27 @@
  *
  ****************************************************************************/
 
-/* This file should never be included directed but, rather, only indirectly
- * through include/syscall.h or include/sys/sycall.h
- */
-
-#ifndef __ARCH_RISCV_INCLUDE_SYSCALL_H
-#define __ARCH_RISCV_INCLUDE_SYSCALL_H
-
 /****************************************************************************
  * Included Files
  ****************************************************************************/
 
-/* Include RISC-V architecture-specific syscall macros */
+#include <nuttx/config.h>
 
-#ifdef CONFIG_ARCH_RV32IM
-# include <arch/rv32im/syscall.h>
-#elif defined CONFIG_ARCH_RV64GC
-# include <arch/rv64gc/syscall.h>
-#endif
+#include <stdint.h>
+#include <assert.h>
+
+#include <nuttx/irq.h>
+#include <nuttx/arch.h>
+#include <nuttx/board.h>
+#include <arch/board/board.h>
+
+#include "up_arch.h"
+#include "up_internal.h"
+
+#include "group/group.h"
 
 /****************************************************************************
  * Pre-processor Definitions
- ****************************************************************************/
-
-/****************************************************************************
- * Public Types
- ****************************************************************************/
-
-/****************************************************************************
- * Inline functions
  ****************************************************************************/
 
 /****************************************************************************
@@ -71,23 +61,88 @@
  ****************************************************************************/
 
 /****************************************************************************
- * Public Function Prototypes
+ * Private Data
  ****************************************************************************/
 
-#ifndef __ASSEMBLY__
-#ifdef __cplusplus
-#define EXTERN extern "C"
-extern "C"
+/****************************************************************************
+ * Private Functions
+ ****************************************************************************/
+
+/****************************************************************************
+ * Public Functions
+ ****************************************************************************/
+
+uint32_t *up_doirq(int irq, uint32_t *regs)
 {
+  board_autoled_on(LED_INIRQ);
+#ifdef CONFIG_SUPPRESS_INTERRUPTS
+  PANIC();
 #else
-#define EXTERN extern
+  /* Current regs non-zero indicates that we are processing an interrupt;
+   * g_current_regs is also used to manage interrupt level context switches.
+   *
+   * Nested interrupts are not supported
+   */
+
+  DEBUGASSERT(g_current_regs == NULL);
+  g_current_regs = regs;
+
+  /* Disable further occurrences of this interrupt (until the interrupt sources
+   * have been clear by the driver).
+   */
+
+  up_disable_irq(irq);
+
+  /* Deliver the IRQ */
+
+  irq_dispatch(irq, regs);
+
+#if defined(CONFIG_ARCH_FPU) || defined(CONFIG_ARCH_ADDRENV)
+  /* Check for a context switch.  If a context switch occurred, then
+   * g_current_regs will have a different value than it did on entry.  If an
+   * interrupt level context switch has occurred, then restore the floating
+   * point state and the establish the correct address environment before
+   * returning from the interrupt.
+   */
+
+  if (regs != g_current_regs)
+    {
+#ifdef CONFIG_ARCH_FPU
+      /* Restore floating point registers */
+
+      up_restorefpu((uint32_t *)g_current_regs);
 #endif
 
-#undef EXTERN
-#ifdef __cplusplus
+#ifdef CONFIG_ARCH_ADDRENV
+      /* Make sure that the address environment for the previously
+       * running task is closed down gracefully (data caches dump,
+       * MMU flushed) and set up the address environment for the new
+       * thread at the head of the ready-to-run list.
+       */
+
+      (void)group_addrenv(NULL);
+#endif
+    }
+#endif
+
+  /* If a context switch occurred while processing the interrupt then
+   * g_current_regs may have change value.  If we return any value different
+   * from the input regs, then the lower level will know that a context
+   * switch occurred during interrupt processing.
+   */
+
+  regs = (uint32_t *)g_current_regs;
+
+  /* Set g_current_regs to NULL to indicate that we are no longer in an
+   * interrupt handler.
+   */
+
+  g_current_regs = NULL;
+
+  /* Unmask the last interrupt (global interrupts are still disabled) */
+
+  up_enable_irq(irq);
+#endif
+  board_autoled_off(LED_INIRQ);
+  return regs;
 }
-#endif
-#endif
-
-#endif /* __ARCH_RISCV_INCLUDE_SYSCALL_H */
-

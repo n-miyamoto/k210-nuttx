@@ -1,10 +1,8 @@
 /****************************************************************************
- * arch/risc-v/include/syscall.h
+ * arch/risc-v/include/rv32im/csr.h
  *
- *   Copyright (C) 2011 Gregory Nutt. All rights reserved.
- *   Author: Gregory Nutt <gnutt@nuttx.org>
- *
- *   Modified 2016 by Ken Pettit for RISC-V architecture.
+ *   Copyright (C) 2016 Ken Pettit. All rights reserved.
+ *   Author: Ken Pettit <pettitkd@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -16,9 +14,6 @@
  *    notice, this list of conditions and the following disclaimer in
  *    the documentation and/or other materials provided with the
  *    distribution.
- * 3. Neither the name NuttX nor the names of its contributors may be
- *    used to endorse or promote products derived from this software
- *    without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -36,58 +31,69 @@
  ****************************************************************************/
 
 /* This file should never be included directed but, rather, only indirectly
- * through include/syscall.h or include/sys/sycall.h
+ * through nuttx/irq.h
  */
 
-#ifndef __ARCH_RISCV_INCLUDE_SYSCALL_H
-#define __ARCH_RISCV_INCLUDE_SYSCALL_H
+#ifndef __ARCH_RISCV_INCLUDE_RV64GC_CSR_H
+#define __ARCH_RISCV_INCLUDE_RV64GC_CSR_H
 
 /****************************************************************************
  * Included Files
  ****************************************************************************/
 
-/* Include RISC-V architecture-specific syscall macros */
-
-#ifdef CONFIG_ARCH_RV32IM
-# include <arch/rv32im/syscall.h>
-#elif defined CONFIG_ARCH_RV64GC
-# include <arch/rv64gc/syscall.h>
-#endif
-
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
+
+/* Machine Information Registers */
+
+//#define CSR_MISA          0xF10
+#define CSR_MVENDORID     0xF11
+#define CSR_MARCHID       0xF12
+#define CSR_MIMPID        0xF13
+#define CSR_MHARTID       0xF14
+
+/* Machine Trap Registers */
+
+#define CSR_MSTATUS       0x300
+#define CSR_MISA          0x301
+#define CSR_MTDELEG       0x302
+#define CSR_MIE           0x304
+#define CSR_MTVEC         0x305
+//#define CSR_MIVEC         0x30f
+
+/* Machine Trap Handling */
+
+#define CSR_MSCRATCH      0x340
+#define CSR_MEPC          0x341
+#define CSR_MCAUSE        0x342
+#define CSR_MBADADDR      0x343
+#define CSR_MIP           0x344
+
+/* Machine Timers and Counters */
+
+#define CSR_CYCLE         0xB00
+#define CSR_INSTRET       0xB02
+//#define CSR_HPMCOUNT3     0xB03
+//#define CSR_HPMCOUNT4     0xB04
+
+/* Debug interface CSRs */
+
+#define CSR_DCSR          0x7B0
+#define CSR_DPC           0x7B1
+#define CSR_DSCRATCH      0x7B2
 
 /****************************************************************************
  * Public Types
  ****************************************************************************/
 
 /****************************************************************************
- * Inline functions
- ****************************************************************************/
-
-/****************************************************************************
- * Public Data
+ * Public Variables
  ****************************************************************************/
 
 /****************************************************************************
  * Public Function Prototypes
  ****************************************************************************/
 
-#ifndef __ASSEMBLY__
-#ifdef __cplusplus
-#define EXTERN extern "C"
-extern "C"
-{
-#else
-#define EXTERN extern
-#endif
-
-#undef EXTERN
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-#endif /* __ARCH_RISCV_INCLUDE_SYSCALL_H */
+#endif /* __ARCH_RISCV_INCLUDE_RV32IM_CSR_H */
 

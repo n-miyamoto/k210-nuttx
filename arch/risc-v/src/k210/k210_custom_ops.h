@@ -1,5 +1,5 @@
-/****************************************************************************
- * arch/risc-v/include/irq.h
+/************************************************************************************
+ * arch/risc-v/src/nr5m100/nr5_custom_ops.h
  *
  *   Copyright (C) 2016 Ken Pettit. All rights reserved.
  *   Author: Ken Pettit <pettitkd@gmail.com>
@@ -28,53 +28,36 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- ****************************************************************************/
+ ************************************************************************************/
 
-/* This file should never be included directed but, rather, only indirectly
- * through nuttx/irq.h
- */
-
-#ifndef __ARCH_RISCV_INCLUDE_IRQ_H
-#define __ARCH_RISCV_INCLUDE_IRQ_H
-
-/****************************************************************************
- * Included Files
- ****************************************************************************/
-
-/* Include chip-specific IRQ definitions (including IRQ numbers) */
-
-#include <stdint.h>
-#include <nuttx/irq.h>
-#include <arch/chip/irq.h>
-
-/* Include RISC-V architecture-specific IRQ definitions */
-
-#if defined(CONFIG_ARCH_RV32IM) || defined(CONFIG_ARCH_RV32I)
-#  include <arch/rv32im/irq.h>
-#elif defined(CONFIG_ARCH_RV64GC)
-#  include <arch/rv64gc/irq.h>
-#endif
+// TODO : k210 has noc custom ops. fix or remove this file.
 
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
 
-typedef uint32_t  irqstate_t;
+#define q0 0
+#define q1 1
+#define q2 2
+#define q3 3
 
 /****************************************************************************
- * Public Types
+ * Assmebler Macros
  ****************************************************************************/
 
-/****************************************************************************
- * Public Variables
- ****************************************************************************/
+.macro getq rd qs
+custom0 \rd,\qs,0,0
+.endm
 
-/****************************************************************************
- * Public Function Prototypes
- ****************************************************************************/
+.macro setq qd rs
+custom0 \qd,\rs,0,1
+.endm
 
-irqstate_t  irqsave(void);
+.macro lsbenc rd rs
+custom0 \rd,\rs,0,2
+.endm
 
-void irqrestore(irqstate_t);
+.macro timer rd rs
+custom0 \rd,\rs,0,5
+.endm
 
-#endif /* __ARCH_RISCV_INCLUDE_IRQ_H */

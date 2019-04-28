@@ -1,10 +1,9 @@
-/****************************************************************************
- * arch/risc-v/include/syscall.h
+/*****************************************************************************
+ * arch/risc-v/include/nr5m100/irq.h
+ * include/arch/nr5m100/irq.h
  *
- *   Copyright (C) 2011 Gregory Nutt. All rights reserved.
- *   Author: Gregory Nutt <gnutt@nuttx.org>
- *
- *   Modified 2016 by Ken Pettit for RISC-V architecture.
+ *   Copyright (C) 2016 Ken Pettit. All rights reserved.
+ *   Author: Ken Pettit <pettitkd@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -16,9 +15,6 @@
  *    notice, this list of conditions and the following disclaimer in
  *    the documentation and/or other materials provided with the
  *    distribution.
- * 3. Neither the name NuttX nor the names of its contributors may be
- *    used to endorse or promote products derived from this software
- *    without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -35,59 +31,51 @@
  *
  ****************************************************************************/
 
-/* This file should never be included directed but, rather, only indirectly
- * through include/syscall.h or include/sys/sycall.h
- */
-
-#ifndef __ARCH_RISCV_INCLUDE_SYSCALL_H
-#define __ARCH_RISCV_INCLUDE_SYSCALL_H
+#ifndef __ARCH_RISCV_INCLUDE_K210_IRQ_H
+#define __ARCH_RISCV_INCLUDE_K210_IRQ_H
 
 /****************************************************************************
  * Included Files
  ****************************************************************************/
 
-/* Include RISC-V architecture-specific syscall macros */
-
-#ifdef CONFIG_ARCH_RV32IM
-# include <arch/rv32im/syscall.h>
-#elif defined CONFIG_ARCH_RV64GC
-# include <arch/rv64gc/syscall.h>
-#endif
-
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
+#define  K210_IRQ_TRAP      0
+
+#define  EPIC_STATUS_PRI_MASK       0x001C
+#define  EPIC_STATUS_INT_PRI_MASK   0x01C0
+#define  EPIC_STATUS_INT_PRI1       0x0040
+
+#define  K210_IRQ_SYSTICK     1
+#define  K210_IRQ_TIMER       2
+#define  K210_IRQ_SOFTWARE    3
+#define  K210_IRQ_DEBUG       4
+#define  K210_IRQ_UART1_RX    5
+#define  K210_IRQ_UART1_TX    6
+#define  K210_IRQ_TIMER1_A    7
+#define  K210_IRQ_TIMER1_B    8
+#define  K210_IRQ_TIMER2_A    9
+#define  K210_IRQ_TIMER2_B    10
+
+#define  NR_IRQS             11
+
 
 /****************************************************************************
  * Public Types
  ****************************************************************************/
 
 /****************************************************************************
- * Inline functions
- ****************************************************************************/
-
-/****************************************************************************
- * Public Data
+ * Public Variables
  ****************************************************************************/
 
 /****************************************************************************
  * Public Function Prototypes
  ****************************************************************************/
 
-#ifndef __ASSEMBLY__
-#ifdef __cplusplus
-#define EXTERN extern "C"
-extern "C"
-{
-#else
-#define EXTERN extern
-#endif
+irqstate_t up_irq_save(void);
+void up_irq_restore(irqstate_t irqstate);
+irqstate_t up_irq_enable(void);
 
-#undef EXTERN
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-#endif /* __ARCH_RISCV_INCLUDE_SYSCALL_H */
+#endif /* __ARCH_RISCV_INCLUDE_K210_IRQ_H */
 

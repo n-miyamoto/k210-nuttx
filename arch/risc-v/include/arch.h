@@ -49,6 +49,8 @@
 
 #ifdef CONFIG_ARCH_RV32IM
 #  include "rv32im/csr.h"
+#elif  CONFIG_ARCH_RV64GC
+#  include "rv64gc/csr.h"
 #endif
 
 /****************************************************************************
@@ -57,7 +59,7 @@
 
 /* Macros to get the core and vendor ID, HART, arch and ISA codes, etc.
  */
-#ifdef CONFIG_RV32IM_SYSTEM_CSRRS_SUPPORT
+#ifdef CONFIG_RV32IM_SYSTEM_CSRRS_SUPPORT || CONFIG_RV64GC_SYSTEM_CSRRS_SUPPORT  
 
 uint32_t up_getmisa(void);
 uint32_t up_getarchid(void);
@@ -91,7 +93,8 @@ uint32_t up_gethartid(void);
  * Public Function Prototypes
  ****************************************************************************/
 
-#ifdef CONFIG_RV32IM_HW_MULDIV
+#ifdef CONFIG_RV32IM_HW_MULDIV || CONFIG_RV64GC_HW_MULDIV
+
 uint32_t up_hard_mul(uint32_t a, uint32_t b);
 uint32_t up_hard_mulh(uint32_t a, uint32_t b);
 uint32_t up_hard_mulhsu(uint32_t a, uint32_t b);

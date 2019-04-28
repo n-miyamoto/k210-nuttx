@@ -38,10 +38,12 @@
 include $(TOPDIR)/Make.defs
 include chip/Make.defs
 
-ifeq ($(CONFIG_ARCH_RV32I),y)           # Base Integer support
+ifeq ($(CONFIG_ARCH_RV32I),y)           # RV32 Base Integer support
 ARCH_SUBDIR = rv32i
-else ifeq ($(CONFIG_ARCH_RV32IM),y)     # Integer + math support
+else ifeq ($(CONFIG_ARCH_RV32IM),y)     # RV32 Integer + math support
 ARCH_SUBDIR = rv32im
+else ifeq ($(CONFIG_ARCH_RV64GC),y)     # RV64 support
+ARCH_SUBDIR = rv64gc
 else
 ARCH_SUBDIR = rv32i                     # Default to base RV32I core
 endif

@@ -1,0 +1,94 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+comment "K210 Configuration Options"
+
+config K210
+	bool
+	default y
+	select K210_HAVE_UART1
+	select K210_HAVE_TIMER1
+
+menu "K210 Peripheral Support"
+
+# These "hidden" settings determine is a peripheral option is available for the
+# selection MCU
+
+config K210_HAVE_UART1
+	bool
+	default n
+	select UART1_SERIALDRIVER
+	select ARCH_HAVE_SERIAL_TERMIOS
+
+config K210_HAVE_TIMER1
+	bool
+	default n
+
+config K210_HAVE_TIM2
+	bool
+	default n
+
+config K210_HAVE_I2C1
+	bool
+	default n
+
+config K210_HAVE_SPI1
+	bool
+	default n
+
+# These are the peripheral selections proper
+
+config K210_I2C1
+	bool "I2C1"
+	default n
+	select K210_I2C
+
+config K210_SPI1
+	bool "SPI1"
+	default n
+	select SPI
+	select K210_SPI
+
+config K210_TIMER1
+	bool "TIMER1"
+	default n
+	depends on K210_HAVE_TIMER1
+
+config K210_TIMER2
+	bool "TIMER2"
+	default n
+
+config K210_UART1
+	bool "UART1"
+	default n
+	select ARCH_HAVE_UART1
+	select ARCH_HAVE_SERIAL_TERMIOS
+	select K210_UART
+
+endmenu
+
+config K210_SPI
+	bool
+
+config K210_I2C
+	bool
+
+config K210_UART
+	bool
+
+config K210_UART_RX_BUF_SIZE
+	int "UART RX Bufer size"
+	default 64
+	depends on K210_UART
+	---help---
+		Size of RX buffers for K210 UARTs
+
+config K210_UART_TX_BUF_SIZE
+	int "UART TX Bufer size"
+	default 64
+	depends on K210_UART
+	---help---
+		Size of TX buffers for K210 UARTs
+
