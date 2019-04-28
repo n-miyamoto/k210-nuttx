@@ -69,3 +69,9 @@ void board_autoled_on(int led)
 {
 
 }
+
+
+void board_autoled_off(int led)
+{
+
+}

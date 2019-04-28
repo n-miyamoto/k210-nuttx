@@ -37,7 +37,7 @@ OUTPUT_ARCH( "riscv" )
  * execute). The symbol _start is defined in crt0.S
  */
 /*ENTRY(_start)*/
-ENTRY(__reset)
+ENTRY(_start)
 
 /*
  * The GROUP command is special since the listed archives will be

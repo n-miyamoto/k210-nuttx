@@ -32,10 +32,11 @@
 
 # Specify our HEAD assembly file.  This will be linked as
 # the first object file, so it will appear at address 0
-HEAD_ASRC = k210_vectors.S
+# HEAD_ASRC = k210_vectors.S
+HEAD_ASRC = crt.S
 
 # Specify our general Assembly files
-CHIP_ASRCS = k210_head.S k210_csr.S up_syscall.S
+CHIP_ASRCS =  k210_csr.S up_syscall.S
 
 # If we are compiling the NELIB library, then specify it
 # in AFLAGS so we can change up our startup behavior
@@ -68,6 +69,7 @@ endif
 CHIP_CSRCS  = k210_init.c k210_arch.c
 CHIP_CSRCS += k210_lowputc.c k210_allocateheap.c k210_serial.c
 CHIP_CSRCS += k210_timerisr.c k210_irq.c k210_irq_dispatch.c
+CHIP_CSRCS += entry_user.c interrupt.c syscalls.c
 
 ifeq ($(CONFIG_TIMER),y)
 CHIP_CSRCS += k210_tim_lowerhalf.c
