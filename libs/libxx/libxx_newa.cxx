@@ -73,7 +73,7 @@
 #ifdef CONFIG_CXX_NEWLONG
 void *operator new[](unsigned long nbytes)
 #else
-void *operator new[](unsigned int nbytes)
+void *operator new[](unsigned long int nbytes)
 #endif
 {
   // We have to allocate something

@@ -38,7 +38,7 @@
 ASRCS =
 AOBJS = $(ASRCS:.S=$(OBJEXT))
 
-CSRCS = k210_appinit.c k210_boot.c k210_bit_autoleds.c
+CSRCS = k210_appinit.c k210_boot.c k210_autoleds.c
 
 ifeq ($(CONFIG_ARCH_BOARD_MAIX_BIT_CUSTOM_CLOCKCONFIG),y)
 CSRCS += k210_clockconfig.c
