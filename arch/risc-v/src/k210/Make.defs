@@ -59,7 +59,7 @@ CMN_CSRCS  += up_allocateheap.c up_createstack.c up_dumpstate.c up_exit.c up_idl
 CMN_CSRCS  += up_assert.c up_blocktask.c up_copystate.c up_initialstate.c
 CMN_CSRCS  += up_interruptcontext.c up_releasepending.c up_reprioritizertr.c
 CMN_CSRCS  += up_releasestack.c up_stackframe.c up_schedulesigaction.c up_sigdeliver.c
-CMN_CSRCS  += up_unblocktask.c up_usestack.c
+CMN_CSRCS  += up_unblocktask.c up_usestack.c up_mdelay.c
 
 ifeq ($(CONFIG_ARCH_HAVE_VFORK),y)
 CMN_CSRCS  += up_vfork.c

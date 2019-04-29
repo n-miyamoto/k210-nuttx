@@ -123,7 +123,7 @@ _start:
   sll sp, sp, STKSHIFT
   add sp, sp, tp
 
-  j _init_bsp
+  j __start
 
   .globl trap_entry
   .type trap_entry, @function

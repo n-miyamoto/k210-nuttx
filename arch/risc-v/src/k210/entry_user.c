@@ -62,7 +62,8 @@ extern char _heap_end[];
 //    return user_main(0, 0);
 //}
 
-void _init_bsp(int core_id, int number_of_cores)
+//void _init_bsp(int core_id, int number_of_cores)
+void __start(int core_id, int number_of_cores)
 {
     //extern int main(int argc, char* argv[]);
     //extern void __libc_init_array(void);
