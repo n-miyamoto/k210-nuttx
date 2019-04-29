@@ -69,7 +69,7 @@ SECTIONS
   /* Program code segment, also known as a text segment */
   .text :
   {
-    PROVIDE( _text = ABSOLUTE(.) );
+    PROVIDE( _stext = ABSOLUTE(.) );
     /* Initialization code segment */
     KEEP( *(.text.start) )
     *(.text.unlikely .text.unlikely.*)
@@ -102,10 +102,12 @@ SECTIONS
 
   .init_array :
   {
-    PROVIDE_HIDDEN (__init_array_start = .);
+    PROVIDE_HIDDEN (_sinit = .);
+    /*PROVIDE_HIDDEN (__init_array_start = .);*/
     KEEP (*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))
     KEEP (*(.init_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .ctors))
-    PROVIDE_HIDDEN (__init_array_end = .);
+    /*PROVIDE_HIDDEN (__init_array_end = .);*/
+    PROVIDE_HIDDEN (_einit = .);
   } >ram AT>ram :ram_ro
 
   .fini_array :
@@ -249,4 +251,3 @@ SECTIONS
   /* Heap end is at the end of memory, the memory size can set in kconfig */
   PROVIDE( _heap_end = _ram_end );
 }
-

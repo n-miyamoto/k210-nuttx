@@ -50,7 +50,7 @@ endif
 # math libs will be used to compare software mul vs hw mul.
 # But hw mul must be enabled to compile the .S file, or we
 # will get an illegal instruction error.
-ASARCHCPUFLAGS += -march=rv64gc
+ASARCHCPUFLAGS += -march=rv64gc -lm
 
 
 # Specify C code within the common directory to be included
@@ -66,12 +66,13 @@ CMN_CSRCS  += up_vfork.c
 endif
 
 # Specify our C code within this directory to be included
-CHIP_CSRCS  = k210_init.c k210_arch.c
+CHIP_CSRCS  = k210_init.c k210_arch.c 
 CHIP_CSRCS += k210_lowputc.c k210_allocateheap.c k210_serial.c
 CHIP_CSRCS += k210_timerisr.c k210_irq.c k210_irq_dispatch.c
-CHIP_CSRCS += entry_user.c interrupt.c syscalls.c
+CHIP_CSRCS += entry_user.c interrupt.c syscalls.c 
+CHIP_CSRCS += uarths.c plic.c sysctl.c fpioa.c
 
 ifeq ($(CONFIG_TIMER),y)
-CHIP_CSRCS += k210_tim_lowerhalf.c
+CHIP_CSRCS += k210_tim_lowerhalf.c -lm
 endif
 

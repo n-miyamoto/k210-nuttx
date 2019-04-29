@@ -110,6 +110,6 @@ endif
 
 HOSTCC = gcc
 HOSTINCLUDES = -I.
-HOSTCFLAGS = -Wall -Wstrict-prototypes -Wshadow -Wundef -g -pipe
+HOSTCFLAGS = -Wall -Wstrict-prototypes -Wshadow -Wundef -g -pipe 
 HOSTLDFLAGS =
 

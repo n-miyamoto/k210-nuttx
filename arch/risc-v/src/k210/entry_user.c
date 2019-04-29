@@ -17,18 +17,19 @@
 //#include "atomic.h"
 //#include "clint.h"
 //#include "dmac.h"
-//#include "entry.h"
-//#include "fpioa.h"
+#include "entry.h"
+#include "fpioa.h"
 #include "platform.h"
 //#include "plic.h"
 //#include "sysctl.h"
 //#include "syslog.h"
-//#include "uarths.h"
+#include "uarths.h"
 #include "k210.h"
+
 
 extern volatile uint64_t g_wake_up[2];
 
-//core_instance_t core1_instance;
+core_instance_t core1_instance;
 
 volatile char * const ram = (volatile char*)RAM_BASE_ADDR;
 
@@ -66,11 +67,33 @@ extern char _heap_end[];
 void __start(int core_id, int number_of_cores)
 {
     //extern int main(int argc, char* argv[]);
-    //extern void __libc_init_array(void);
-    //extern void __libc_fini_array(void);
+    extern void __libc_init_array(void);
+    extern void __libc_fini_array(void);
+
+
 
     if (core_id == 0)
     {
+        init_bss();
+        /* Init UART */
+        uarths_init();
+        /* Init FPIOA */
+        fpioa_init();
+
+        while(1){
+            for(int i=0;i<100000;i++);
+            printf("hello world\r\n");
+        }
+
+        core1_instance.callback = NULL;
+        core1_instance.ctx = NULL;
+
+        /* Register finalization function */
+        //atexit(__libc_fini_array);
+        /* Init libc array for C++ */
+        //__libc_init_array();
+
+
         /* Initialize bss data to 0 */
         //init_bss();
         /* Init UART */
@@ -89,6 +112,8 @@ void __start(int core_id, int number_of_cores)
         k210_boardinitialize();
         
         /* Call nx_start() */
+        /* Init UART */
+        uarths_init();
         
         nx_start();
 
