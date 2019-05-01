@@ -80,9 +80,11 @@ void __start(int core_id, int number_of_cores)
         /* Init FPIOA */
         fpioa_init();
 
-        while(1){
-            for(int i=0;i<100000;i++);
-            printf("hello world\r\n");
+        //while(1)
+        {
+            for(int i=0;i<10000000;i++);
+            //printf("hello world\r\n");
+            uarths_puts("Hello world!!\r\n");
         }
 
         core1_instance.callback = NULL;
@@ -106,15 +108,18 @@ void __start(int core_id, int number_of_cores)
         //__libc_init_array();
         
         k210_lowsetup();
+        uarths_puts("lowersetup\r\n");
         
         /* Do board initialization */
         
         k210_boardinitialize();
+        uarths_puts("boar initialize\r\n");
         
         /* Call nx_start() */
         /* Init UART */
-        uarths_init();
+        //uarths_init();
         
+        uarths_puts("start nuttx\r\n");
         nx_start();
 
         /* Shouldn't get here */

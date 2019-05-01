@@ -106,6 +106,7 @@ static inline void up_color_intstack(void)
 
 void up_initialize(void)
 {
+  uarths_puts("up_initialize start !!! \r\n");
   /* Colorize the interrupt stack */
 
   up_color_intstack();

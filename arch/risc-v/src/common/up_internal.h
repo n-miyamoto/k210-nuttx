@@ -113,10 +113,12 @@ extern "C"
 #define EXTERN extern
 #endif
 
-//EXTERN volatile uint32_t *g_current_regs;
-//EXTERN uint32_t g_idle_topstack;
-volatile uint32_t *g_current_regs;
-uint32_t g_idle_topstack;
+extern char _heap_start[];
+extern char _heap_end[];
+EXTERN volatile uint32_t *g_current_regs;
+EXTERN uint32_t g_idle_topstack ;
+//volatile uint32_t *g_current_regs;
+//uint32_t g_idle_topstack;
 
 /****************************************************************************
  * Public Functions
