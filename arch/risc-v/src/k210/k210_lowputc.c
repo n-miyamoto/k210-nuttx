@@ -62,28 +62,28 @@
 
 #ifdef HAVE_SERIAL_CONSOLE
 #  if defined(CONFIG_UART1_SERIAL_CONSOLE)
-#    define NR5_CONSOLE_BASE        NR5_UART1_BASE
-#    define NR5_CONSOLE_BAUD        CONFIG_UART1_BAUD
-#    define NR5_CONSOLE_BITS        CONFIG_UART1_BITS
-#    define NR5_CONSOLE_PARITY      CONFIG_UART1_PARITY
-#    define NR5_CONSOLE_2STOP       CONFIG_UART1_2STOP
-#    define NR5_CONSOLE_TX          GPIO_UART1_TX
-#    define NR5_CONSOLE_RX          GPIO_UART1_RX
+#    define K210_CONSOLE_BASE        K210_UART1_BASE
+#    define K210_CONSOLE_BAUD        CONFIG_UART1_BAUD
+#    define K210_CONSOLE_BITS        CONFIG_UART1_BITS
+#    define K210_CONSOLE_PARITY      CONFIG_UART1_PARITY
+#    define K210_CONSOLE_2STOP       CONFIG_UART1_2STOP
+#    define K210_CONSOLE_TX          GPIO_UART1_TX
+#    define K210_CONSOLE_RX          GPIO_UART1_RX
 #    define HAVE_UART
 #  elif defined(CONFIG_UART2_SERIAL_CONSOLE)
-#    define NR5_CONSOLE_BASE        NR5_UART1_BASE
-#    define NR5_CONSOLE_BAUD        CONFIG_UART1_BAUD
-#    define NR5_CONSOLE_BITS        CONFIG_UART1_BITS
-#    define NR5_CONSOLE_PARITY      CONFIG_UART1_PARITY
-#    define NR5_CONSOLE_2STOP       CONFIG_UART1_2STOP
-#    define NR5_CONSOLE_TX          GPIO_UART1_TX
-#    define NR5_CONSOLE_RX          GPIO_UART1_RX
+#    define K210_CONSOLE_BASE        K210_UART1_BASE
+#    define K210_CONSOLE_BAUD        CONFIG_UART1_BAUD
+#    define K210_CONSOLE_BITS        CONFIG_UART1_BITS
+#    define K210_CONSOLE_PARITY      CONFIG_UART1_PARITY
+#    define K210_CONSOLE_2STOP       CONFIG_UART1_2STOP
+#    define K210_CONSOLE_TX          GPIO_UART1_TX
+#    define K210_CONSOLE_RX          GPIO_UART1_RX
 #    define HAVE_UART
 #  endif
 
   /* Calculate UART BAUD rate divider */
 
-#  if defined(CONFIG_NR5_NR5M1XX)
+#  if defined(CONFIG_K210_K210M1XX)
 
     /* Baud rate for standard UART:
      *
@@ -91,10 +91,10 @@
      *   UARTDIV = fCK / 32 / baud
      */
 
-#    define NR5_UARTDIV \
-      ((NR5_HCLK_FREQUENCY >> 5) / NR5_CONSOLE_BAUD)
+#    define K210_UARTDIV \
+      ((K210_HCLK_FREQUENCY >> 5) / K210_CONSOLE_BAUD)
 
-#  endif /* CONFIG_NR5_NR5M1XX */
+#  endif /* CONFIG_K210_K210M1XX */
 #endif /* HAVE_CONSOLE */
 
 /**************************************************************************
@@ -134,12 +134,12 @@ void up_lowputc(char ch)
 #ifdef HAVE_SERIAL_CONSOLE
   /* Wait until the TX data register is empty */
 
-  while ((getreg32(NR5_CONSOLE_BASE + NR5_UART_STATUS_REG_OFFSET) & NR5_UART_STATUS_TX_EMPTY) == 0)
+  while ((getreg32(K210_CONSOLE_BASE + K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_TX_EMPTY) == 0)
     ;
 
   /* Then send the character */
 
-  putreg32((uint32_t)ch, NR5_CONSOLE_BASE + NR5_UART_TX_REG_OFFSET);
+  putreg32((uint32_t)ch, K210_CONSOLE_BASE + K210_UART_TX_REG_OFFSET);
 
 #endif /* HAVE_CONSOLE */
 }
@@ -166,11 +166,11 @@ void k210_lowsetup(void)
 
   /* Configure the UART Baud Rate */
 
-  putreg32(NR5_UARTDIV, NR5_CONSOLE_BASE + NR5_UART_BAUD_RATE_OFFSET);
+  //putreg32(K210_UARTDIV, K210_CONSOLE_BASE + K210_UART_BAUD_RATE_OFFSET);
 
   /* Configure the RX interrupt */
 
-  putreg32(NR5_UART_CTRL_ENABLE_RX_IRQ, NR5_CONSOLE_BASE + NR5_UART_CTRL_REG_OFFSET);
+  putreg32(K210_UART_CTRL_ENABLE_RX_IRQ, K210_CONSOLE_BASE + K210_UART_CTRL_REG_OFFSET);
 
 #endif /* HAVE_SERIAL_CONSOLE && !CONFIG_SUPPRESS_UART_CONFIG */
 #endif /* HAVE_UART */

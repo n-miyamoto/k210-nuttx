@@ -95,7 +95,7 @@
 #else
 #  undef  CONSOLE_DEV                        /* No console */
 #  undef  CONFIG_UART1_SERIAL_CONSOLE
-#  if defined(CONFIG_NR5_UART1)
+#  if defined(CONFIG_K210_UART1)
 #    define TTYS0_DEV       g_uart1port     /* UART1 is ttyS0 */
 #    undef  TTYS1_DEV                       /* No ttyS1 */
 #    define SERIAL_CONSOLE  1
@@ -193,25 +193,25 @@ static const struct uart_ops_s g_uart_ops =
 
 /* I/O buffers */
 
-#ifdef CONFIG_NR5_UART1
+#ifdef CONFIG_K210_UART1
 static char g_uart1rxbuffer[CONFIG_UART1_RXBUFSIZE];
 static char g_uart1txbuffer[CONFIG_UART1_TXBUFSIZE];
 #endif
 
-/* This describes the state of the NR5 UART1 port. */
+/* This describes the state of the K210 UART1 port. */
 
-#ifdef CONFIG_NR5_UART1
-#ifndef CONFIG_NR5_UART1PRIO
-# define CONFIG_NR5_UART1PRIO 4
+#ifdef CONFIG_K210_UART1
+#ifndef CONFIG_K210_UART1PRIO
+# define CONFIG_K210_UART1PRIO 4
 #endif
 
 static struct up_dev_s g_uart1priv =
 {
-  .uartbase  = NR5_UART1_BASE,
+  .uartbase  = K210_UART1_BASE,
   .baud      = CONFIG_UART1_BAUD,
-  .irqrx     = NR5_IRQ_UART1_RX,
-  .irqtx     = NR5_IRQ_UART1_TX,
-  .irqprio   = CONFIG_NR5_UART1PRIO,
+  .irqrx     = K210_IRQ_UART1_RX,
+  .irqtx     = K210_IRQ_UART1_TX,
+  .irqprio   = CONFIG_K210_UART1PRIO,
 };
 
 static uart_dev_t g_uart1port =
@@ -362,7 +362,7 @@ static int up_attach(struct uart_dev_s *dev)
 
   /* Initialize interrupt generation on the peripheral */
 
-  up_serialout(priv, NR5_UART_CTRL_REG_OFFSET, IE_RX | IE_TX);
+  up_serialout(priv, K210_UART_CTRL_REG_OFFSET, IE_RX | IE_TX);
   irq_attach(priv->irqrx, up_interrupt, dev);
   irq_attach(priv->irqtx, up_interrupt, dev);
 
@@ -393,7 +393,7 @@ static void up_detach(struct uart_dev_s *dev)
 
   /* Disable interrupt generation on the peripheral */
 
-  up_serialout(priv, NR5_UART_CTRL_REG_OFFSET, 0);
+  up_serialout(priv, K210_UART_CTRL_REG_OFFSET, 0);
 
   /* Detach from the interrupt */
 
@@ -433,14 +433,14 @@ static int up_interrupt(int irq, void *context, FAR void *arg)
     {
       handled = false;
 
-      status = up_serialin(priv, NR5_UART_STATUS_REG_OFFSET);
+      status = up_serialin(priv, K210_UART_STATUS_REG_OFFSET);
 
       /* Handle incoming, received bytes.  The RX FIFO is configured to
        * interrupt when the RX FIFO is 75% full (that is 6 of 8 for 8-deep
        * FIFOs or 3 of 4 for 4-deep FIFOS.
        */
 
-      if (status & NR5_UART_RX_IRQ_PENDING)
+      if (status & K210_UART_RX_IRQ_PENDING)
         {
           /* Process incoming bytes */
 
@@ -463,7 +463,7 @@ static int up_interrupt(int irq, void *context, FAR void *arg)
        * full condition.
        */
 
-      if (status & NR5_UART_TX_IRQ_PENDING)
+      if (status & K210_UART_TX_IRQ_PENDING)
         {
           /* Process outgoing bytes */
 
@@ -577,7 +577,7 @@ static int up_receive(struct uart_dev_s *dev, uint32_t *status)
 
   /* Then return the actual received byte */
 
-  return  (int)(up_serialin(priv, NR5_UART_RX_REG_OFFSET));
+  return  (int)(up_serialin(priv, K210_UART_RX_REG_OFFSET));
 }
 
 /****************************************************************************
@@ -630,7 +630,7 @@ static bool up_rxavailable(struct uart_dev_s *dev)
 
   /* Return true is data is available in the receive data buffer */
 
-  return (up_serialin(priv, NR5_UART_STATUS_REG_OFFSET) & NR5_UART_STATUS_RX_AVAIL) != 0;
+  return (up_serialin(priv, K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_RX_AVAIL) != 0;
 }
 
 /****************************************************************************
@@ -644,7 +644,7 @@ static bool up_rxavailable(struct uart_dev_s *dev)
 static void up_send(struct uart_dev_s *dev, int ch)
 {
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
-  up_serialout(priv, NR5_UART_TX_REG_OFFSET, (uint32_t)ch);
+  up_serialout(priv, K210_UART_TX_REG_OFFSET, (uint32_t)ch);
 }
 
 /****************************************************************************
@@ -704,7 +704,7 @@ static bool up_txready(struct uart_dev_s *dev)
 
   /* Return TRUE if the Transmit buffer register is not full */
 
-  return (up_serialin(priv, NR5_UART_STATUS_REG_OFFSET) & NR5_UART_STATUS_TX_EMPTY) != 0;
+  return (up_serialin(priv, K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_TX_EMPTY) != 0;
 }
 
 /****************************************************************************
@@ -721,7 +721,7 @@ static bool up_txempty(struct uart_dev_s *dev)
 
   /* Return TRUE if the Transmit shift register is empty */
 
-  return (up_serialin(priv, NR5_UART_STATUS_REG_OFFSET) & NR5_UART_STATUS_TX_EMPTY) != 0;
+  return (up_serialin(priv, K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_TX_EMPTY) != 0;
 }
 
 /****************************************************************************
