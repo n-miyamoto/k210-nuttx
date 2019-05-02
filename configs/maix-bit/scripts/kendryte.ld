@@ -217,6 +217,7 @@ SECTIONS
   /* Thread-local data segment, .tdata (initialized tls). */
   .tdata :
   {
+    PROVIDE( _tdata = ABSOLUTE(.) );
     KEEP( *(.tdata.begin) )
     *(.tdata .tdata.*)
     *(.gnu.linkonce.td.*)
@@ -226,6 +227,7 @@ SECTIONS
   /* Thread-local bss segment, .tbss (zero-initialized tls). */
   .tbss :
   {
+    PROVIDE( _tbss = ABSOLUTE(.) );
     *(.tbss .tbss.*)
     *(.gnu.linkonce.tb.*)
     KEEP( *(.tbss.end) )
