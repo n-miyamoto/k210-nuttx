@@ -47,6 +47,7 @@
 #include <arch/irq.h>
 
 #include "k210.h"
+#include "encoding.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -118,6 +119,7 @@ int k210_trap_handler(int irq, void *context, FAR void *arg)
   /* Print a PANIC message */
 
   up_puts("PANIC!!! TRAP received\r\n");
+  uarths_puts("PANIC!!! TRAP received\r\n");
 
 #ifdef CONFIG_DEBUG
 
@@ -141,12 +143,16 @@ int k210_trap_handler(int irq, void *context, FAR void *arg)
 
 void up_irqinitialize(void)
 {
+#if 0
   uint32_t  mask;
 
   /* Disable all interrupts */
 
+  uarths_puts("irq disable\r\n");
   mask = ~0;
-  __asm__ volatile("csrw %0, %1" :: "i"(K210_EPIC_IRQ_MASK), "r"(mask));
+  //__asm__ volatile("csrw %0, %1" :: "i"(CSR_MIE), "r"(mask));
+  /* Disable global interrupt */
+  clear_csr(mstatus, MSTATUS_MIE);
 
   /* Colorize the interrupt stack for debug purposes */
 
@@ -174,7 +180,8 @@ void up_irqinitialize(void)
   /* Initialize the IRQ stack to Pri level 5 with interrupts disabled */
 
   mask = 0x05 << 2;
-  __asm__ volatile("csrw %0, %1" :: "i"(K210_EPIC_PRIMASK), "r"(mask));
+  uarths_puts("irq disable\r\n");
+  __asm__ volatile("csrw %0, %1" :: "i"(CSR_MIE), "r"(mask));
 
   /* currents_regs is non-NULL only while processing an interrupt */
 
@@ -182,28 +189,44 @@ void up_irqinitialize(void)
 
   /* Attach the Trap exception handler.  */
 
+  uarths_puts("irq attach\r\n");
   irq_attach(K210_IRQ_TRAP, k210_trap_handler, NULL);
 
+  uarths_puts("attach 2\r\n");
   /* Attach software interrupt handler */
 
   irq_attach(K210_IRQ_SOFTWARE, up_swint, NULL);
+  uarths_puts("enable\r\n");
   up_enable_irq(K210_IRQ_SOFTWARE);
+  uarths_puts("irq attach\r\n");
 
   /* Set the software interrupt priority higher */
 
   up_setpri2bit(1 << K210_IRQ_SOFTWARE);
+  uarths_puts("set pri\r\n");
 
 #ifndef CONFIG_SUPPRESS_INTERRUPTS
 
   /* And finally, enable interrupts */
 
   up_enable_irq(K210_IRQ_TRAP);
+  uarths_puts("enable irq\r\n");
 
 #endif
 
   /* Now enable Global Interrupts */
 
-  __asm__ volatile("csrrs a0, %0, 3" :: "i"(K210_EPIC_PRIMASK));
+  __asm__ volatile("csrrs a0, %0, 3" :: "i"(CSR_MIE));
+#else 
+  plic_init();
+  clint_timer_init();
+  clint_ipi_init();
+  
+  irq_attach(K210_IRQ_SOFTWARE, up_swint, NULL);
+  uarths_puts("enable irq\r\n");
+up_enable_irq(K210_IRQ_SOFTWARE);
+  uarths_puts("enable irq\r\n");
+#endif
 }
 
 /****************************************************************************
@@ -216,6 +239,7 @@ void up_irqinitialize(void)
 
 void up_disable_irq(int irq)
 {
+  uarths_puts(__func__);
   up_setirqmaskbit(1 << irq);
 }
 
@@ -229,7 +253,17 @@ void up_disable_irq(int irq)
 
 void up_enable_irq(int irq)
 {
-  up_clearirqmaskbit(1 << irq);
+  switch(irq){
+    case K210_IRQ_SYSTICK:
+      clint_timer_start(10,0);
+      break;
+    case K210_IRQ_SOFTWARE:
+      clint_ipi_enable();
+      break;
+    default:
+      break;
+  }
+  //up_clearirqmaskbit(1 << irq);
 }
 
 /****************************************************************************
@@ -242,6 +276,7 @@ void up_enable_irq(int irq)
 
 void up_ack_irq(int irq)
 {
+  uarths_puts(__func__);
 }
 
 /****************************************************************************
@@ -252,9 +287,10 @@ void up_ack_irq(int irq)
  *
  ****************************************************************************/
 
-uint32_t up_get_newintctx(void)
+uint64_t up_get_newintctx(void)
 {
-  int32_t   regval;
+  uarths_puts(__func__);
+  int64_t   regval;
 
   /* Set priority level 5, enabled upon return from interrupt */
 
@@ -291,6 +327,7 @@ int up_prioritize_irq(int irq, int priority)
 
 irqstate_t up_irq_save(void)
 {
+  uarths_puts(__func__);
   irqstate_t   newpri = (2 << 2) | 3;
   irqstate_t   oldpri;
 
@@ -299,8 +336,10 @@ irqstate_t up_irq_save(void)
    * continue to fire, but no general purpose ints.
    */
 
+  //__asm__ volatile("csrrw %0, %1, %2" : "=r"(oldpri) :
+  //                 "i"(K210_EPIC_PRIMASK), "r"(newpri));
   __asm__ volatile("csrrw %0, %1, %2" : "=r"(oldpri) :
-                   "i"(K210_EPIC_PRIMASK), "r"(newpri));
+                     "i"(CSR_MIE), "r"(newpri));
 
   return oldpri;
 }
@@ -315,7 +354,9 @@ irqstate_t up_irq_save(void)
 
 void up_irq_restore(irqstate_t pri)
 {
-  __asm__ volatile("csrw %0, %1" :: "i"(K210_EPIC_PRIMASK), "r"(pri));
+  uarths_puts(__func__);
+  //__asm__ volatile("csrw %0, %1" :: "i"(K210_EPIC_PRIMASK), "r"(pri));
+  __asm__ volatile("csrw %0, %1" :: "i"(CSR_MIE), "r"(pri));
 }
 
 /****************************************************************************
@@ -328,6 +369,7 @@ void up_irq_restore(irqstate_t pri)
 
 irqstate_t up_irq_enable(void)
 {
+  uarths_puts(__func__);
   irqstate_t   newpri = up_get_newintctx();
   irqstate_t   oldpri;
 

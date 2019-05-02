@@ -143,6 +143,7 @@ static void _up_dumponexit(FAR struct tcb_s *tcb, FAR void *arg)
 
 void _exit(int status)
 {
+  uarths_puts(__func__);
   struct tcb_s *tcb = this_task();
 
   /* Make sure that we are in a critical section with local interrupts.

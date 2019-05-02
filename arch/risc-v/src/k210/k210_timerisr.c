@@ -107,6 +107,7 @@ static int k210_timerisr(int irq, void *context, FAR void *arg)
 {
   /* Process timer interrupt */
 
+  uarths_puts("tick!\r\n");
   nxsched_process_timer();
   return 0;
 }
@@ -139,6 +140,7 @@ uint64_t up_get_systick(void)
 
 void riscv_timer_initialize(void)
 {
+#if 0
   /* Set the SysTick interrupt to the default priority */
 
   up_clearpri1bit(K210_IRQ_SYSTICK);
@@ -156,5 +158,12 @@ void riscv_timer_initialize(void)
   /* And enable the timer interrupt */
 
   up_enable_irq(K210_IRQ_SYSTICK);
+#else 
+
+  clint_timer_init();
+  clint_timer_register(k210_timerisr,NULL);
+  (void)irq_attach(K210_IRQ_SYSTICK, k210_timerisr, NULL);
+  up_enable_irq(K210_IRQ_SYSTICK);
+#endif
 }
 

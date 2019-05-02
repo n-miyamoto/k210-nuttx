@@ -77,6 +77,7 @@
 
 void up_block_task(struct tcb_s *tcb, tstate_t task_state)
 {
+  uarths_puts(__func__);
   struct tcb_s *rtcb = this_task();
   bool switch_needed;
 

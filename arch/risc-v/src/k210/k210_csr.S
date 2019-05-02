@@ -108,7 +108,7 @@ up_gethartid:
     ret
 
 /****************************************************************************
- * Returns the K210M100 specific Embedded Priority Interrupt Controller (EPIC)
+ * Returns the K210 specific Embedded Priority Interrupt Controller (EPIC)
  * IRQ MASK register
  ****************************************************************************/
 
@@ -117,7 +117,7 @@ up_getepicmask:
     ret
 
 /****************************************************************************
- * Returns the K210M100 specific EPIC IRQ Priority register
+ * Returns the K210 specific EPIC IRQ Priority register
  ****************************************************************************/
 
 up_getepicpri:
@@ -125,7 +125,7 @@ up_getepicpri:
     ret
 
 /****************************************************************************
- * Sets the K210M100 specific EPIC IRQ Priority register
+ * Sets the K210 specific EPIC IRQ Priority register
  ****************************************************************************/
 
 up_setepicpri:
@@ -133,7 +133,7 @@ up_setepicpri:
     ret
 
 /****************************************************************************
- * Sets the K210M100 specific SYSTICK control register
+ * Sets the K210 specific SYSTICK control register
  ****************************************************************************/
 
 up_setsystick:
@@ -141,7 +141,7 @@ up_setsystick:
     ret
 
 /****************************************************************************
- * Sets bits in the K210M100 specific PRI1 mask control register
+ * Sets bits in the K210 specific PRI1 mask control register
  ****************************************************************************/
 
 up_setpri1bit:
@@ -149,7 +149,7 @@ up_setpri1bit:
     ret
 
 /****************************************************************************
- * Clears bits in the K210M100 specific PRI1 mask control register
+ * Clears bits in the K210 specific PRI1 mask control register
  ****************************************************************************/
 
 up_clearpri1bit:
@@ -157,7 +157,7 @@ up_clearpri1bit:
     ret
 
 /****************************************************************************
- * Sets bits in the K210M100 specific PRI2 mask control register
+ * Sets bits in the K210 specific PRI2 mask control register
  ****************************************************************************/
 
 up_setpri2bit:
@@ -165,7 +165,7 @@ up_setpri2bit:
     ret
 
 /****************************************************************************
- * Clears bits in the K210M100 specific PRI2 mask control register
+ * Clears bits in the K210 specific PRI2 mask control register
  ****************************************************************************/
 
 up_clearpri2bit:
@@ -173,7 +173,7 @@ up_clearpri2bit:
     ret
 
 /****************************************************************************
- * Sets bits in the K210M100 specific PRI3 mask control register
+ * Sets bits in the K210 specific PRI3 mask control register
  ****************************************************************************/
 
 up_setpri3bit:
@@ -181,7 +181,7 @@ up_setpri3bit:
     ret
 
 /****************************************************************************
- * Clears bits in the K210M100 specific PRI3 mask control register
+ * Clears bits in the K210 specific PRI3 mask control register
  ****************************************************************************/
 
 up_clearpri3bit:
@@ -189,23 +189,23 @@ up_clearpri3bit:
     ret
 
 /****************************************************************************
- * Sets bits in the K210M100 specific IRQ mask control register
+ * Sets bits in the K210 specific IRQ mask control register
  ****************************************************************************/
 
 up_setirqmaskbit:
-    csrrs a0, K210_EPIC_IRQ_MASK, a0
+    csrrs a0, CSR_MIE, a0
     ret
 
 /****************************************************************************
- * Clears bits in the K210M100 specific IRQ mask control register
+ * Clears bits in the K210 specific IRQ mask control register
  ****************************************************************************/
 
 up_clearirqmaskbit:
-    csrrc a0, K210_EPIC_IRQ_MASK, a0
+    csrrc a0, CSR_MIE, a0
     ret
 
 /****************************************************************************
- * Disables global interrupts in K210M100 specific IRQ PRI control register
+ * Disables global interrupts in K210 specific IRQ PRI control register
  ****************************************************************************/
 
 up_disableints:
@@ -213,7 +213,7 @@ up_disableints:
     ret
 
 /****************************************************************************
- * Enables global interrupts in K210M100 specific IRQ PRI control register
+ * Enables global interrupts in K210 specific IRQ PRI control register
  ****************************************************************************/
 
 up_enableints:
@@ -222,7 +222,7 @@ up_enableints:
 
 
 /****************************************************************************
- * Reads K210M100 specific Q0 register (used for interrupt processing)
+ * Reads K210 specific Q0 register (used for interrupt processing)
  ****************************************************************************/
 
 /*
@@ -232,7 +232,7 @@ up_getq0:
 */
 
 /****************************************************************************
- * Reads K210M100 specific Q1 register (used for interrupt processing)
+ * Reads K210 specific Q1 register (used for interrupt processing)
  ****************************************************************************/
 
 /*
@@ -242,7 +242,7 @@ up_getq1:
 */
 
 /****************************************************************************
- * Reads K210M100 specific Q2 register (used for interrupt processing)
+ * Reads K210 specific Q2 register (used for interrupt processing)
  ****************************************************************************/
 /*
 up_getq2:
@@ -251,7 +251,7 @@ up_getq2:
 */
 
 /****************************************************************************
- * Sets K210M100 specific Q0 register (used for interrupt processing)
+ * Sets K210 specific Q0 register (used for interrupt processing)
  ****************************************************************************/
 /*
 up_setq0:
@@ -260,7 +260,7 @@ up_setq0:
 */
 
 /****************************************************************************
- * Sets K210M100 specific Q1 register (used for interrupt processing)
+ * Sets K210 specific Q1 register (used for interrupt processing)
  ****************************************************************************/
 /*
 up_setq1:
@@ -269,7 +269,7 @@ up_setq1:
 */
 
 /****************************************************************************
- * Sets K210M100 specific Q2 register (used for interrupt processing)
+ * Sets K210 specific Q2 register (used for interrupt processing)
  ****************************************************************************/
 /*
 up_setq2:
@@ -278,7 +278,7 @@ up_setq2:
 */
 
 /****************************************************************************
- * Calls the  K210M100 specific LSBENC opcode.  This opcode will find the
+ * Calls the  K210 specific LSBENC opcode.  This opcode will find the
  * first least significant non-zero bit in a0 and return it's ordinal value.
  ****************************************************************************/
 /*

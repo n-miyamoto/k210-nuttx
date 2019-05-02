@@ -113,16 +113,19 @@ void up_initialize(void)
 
   /* Add any extra memory fragments to the memory manager */
 
+  uarths_puts("add region:\r\n");
   up_addregion();
 
   /* Initialize the interrupt subsystem */
 
+  uarths_puts("irq initialize:\r\n");
   up_irqinitialize();
 
   /* Initialize the system timer interrupt */
 
 #if !defined(CONFIG_SUPPRESS_INTERRUPTS) && !defined(CONFIG_SUPPRESS_TIMER_INTS) && \
     !defined(CONFIG_SYSTEMTICK_EXTCLK)
+  uarths_puts("riscv timer\r\n");
   riscv_timer_initialize();
 #endif
 
@@ -145,6 +148,7 @@ void up_initialize(void)
   /* Initialize the serial device driver */
 
 #ifdef USE_SERIALDRIVER
+  uarths_puts("serial :init !!! \r\n");
   up_serialinit();
 #endif
 
@@ -171,11 +175,13 @@ void up_initialize(void)
    * depend on only minimal OS initialization.
    */
 
+  uarths_puts("syslog init !!! \r\n");
   syslog_initialize(SYSLOG_INIT_EARLY);
 
 #ifdef CONFIG_RAMLOG_SYSLOG
   ramlog_sysloginit();
 #endif
 
+  uarths_puts("up_initialize start !!! \r\n");
   board_autoled_on(LED_IRQSENABLED);
 }

@@ -142,7 +142,7 @@ void up_copystate(uint32_t *dest, uint32_t *src);
 void up_dumpstate(void);
 void up_sigdeliver(void);
 int up_swint(int irq, FAR void *context, FAR void *arg);
-uint32_t up_get_newintctx(void);
+uint64_t up_get_newintctx(void);
 
 /* System timer *************************************************************/
 

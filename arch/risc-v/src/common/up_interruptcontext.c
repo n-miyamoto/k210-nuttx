@@ -66,5 +66,6 @@
 
 bool up_interrupt_context(void)
 {
+  uarths_puts(__func__);
    return g_current_regs != NULL;
 }

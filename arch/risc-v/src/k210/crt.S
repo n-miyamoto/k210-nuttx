@@ -21,6 +21,21 @@
 # define REGBYTES 8
 # define STKSHIFT 16
 
+//#define K210_STACK_BASE      _ebss
+//#define K210_STACK_TOP       (_ebss + CONFIG_IDLETHREAD_STACKSIZE - 4)
+
+#if CONFIG_ARCH_INTERRUPTSTACK > 3
+#  define K210_INTSTACK_BASE K210_STACK_TOP
+#  define K210_INTSTACK_SIZE (CONFIG_ARCH_INTERRUPTSTACK & ~3)
+#  define K210_INTSTACK_TOP  K210_STACK_TOP+K210_INTSTACK_SIZE
+#  define K210_HEAP_BASE     K210_INTSTACK_TOP
+#else
+#  define K210_HEAP_BASE     _heap_start
+#endif
+/****************************************************************************
+ * Public Symbols
+ ****************************************************************************/
+.global	g_idle_topstack
 
 .section .text.start, "ax", @progbits
 .globl _start
@@ -288,3 +303,13 @@ _tdata_end:
 .globl _tbss_end
 _tbss_end:
 
+/****************************************************************************
+ * This global variable is unsigned int g_idle_topstack and is exported here only
+ * because of its coupling to idle thread stack.
+ ****************************************************************************/
+
+	.section .data
+	.type	g_idle_topstack, object
+g_idle_topstack:
+	.long	K210_HEAP_BASE
+	.size	g_idle_topstack, .-g_idle_topstack

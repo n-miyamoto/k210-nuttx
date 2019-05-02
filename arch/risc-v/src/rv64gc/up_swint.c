@@ -130,6 +130,7 @@ static void dispatch_syscall(void)
 
 int up_swint(int irq, FAR void *context, FAR void *arg)
 {
+  uarths_puts("up swint\r\n");
   uint32_t *regs = (uint32_t *)context;
 
   DEBUGASSERT(regs && regs == g_current_regs);

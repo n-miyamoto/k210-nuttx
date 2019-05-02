@@ -76,6 +76,7 @@ volatile uint32_t * g_current_regs;
 
 uint64_t * irq_dispatch_all(uint64_t *regs, uint32_t irqmask)
 {
+  uarths_puts(__func__);
   int next, mask;
   mask = irqmask & 0xFFFF;
 

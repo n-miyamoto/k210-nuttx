@@ -81,6 +81,7 @@
 static void _up_assert(int errorcode) noreturn_function;
 static void _up_assert(int errorcode)
 {
+  uarths_puts(__func__);
   /* Flush any buffered SYSLOG data */
 
   (void)syslog_flush();

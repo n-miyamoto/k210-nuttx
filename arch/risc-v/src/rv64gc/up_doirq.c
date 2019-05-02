@@ -74,6 +74,7 @@
 
 uint32_t *up_doirq(int irq, uint32_t *regs)
 {
+  uarths_puts(__func__);
   board_autoled_on(LED_INIRQ);
 #ifdef CONFIG_SUPPRESS_INTERRUPTS
   PANIC();

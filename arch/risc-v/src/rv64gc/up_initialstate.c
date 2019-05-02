@@ -69,8 +69,9 @@
 
 void up_initial_state(struct tcb_s *tcb)
 {
+  uarths_puts(__func__);
   struct xcptcontext *xcp = &tcb->xcp;
-  uint32_t regval;
+  uint64_t regval;
 
   /* Initialize the initial exception register context structure */
 
@@ -82,11 +83,11 @@ void up_initial_state(struct tcb_s *tcb)
    * only the start function would do that and we have control over that one
    */
 
-  xcp->regs[REG_SP]      = (uint32_t)tcb->adj_stack_ptr;
+  xcp->regs[REG_SP]      = (uint64_t)tcb->adj_stack_ptr;
 
   /* Save the task entry point */
 
-  xcp->regs[REG_EPC]     = (uint32_t)tcb->start;
+  xcp->regs[REG_EPC]     = (uint64_t)tcb->start;
 
   /* If this task is running PIC, then set the PIC base register to the
    * address of the allocated D-Space region.
@@ -117,5 +118,6 @@ void up_initial_state(struct tcb_s *tcb)
 
   regval = up_get_newintctx();
   xcp->regs[REG_INT_CTX] = regval;
+  uarths_puts(__func__);
 }
 
