@@ -111,6 +111,7 @@
 
 int up_use_stack(struct tcb_s *tcb, void *stack, size_t stack_size)
 {
+  uarths_puts(__func__);
   size_t top_of_stack;
   size_t size_of_stack;
 

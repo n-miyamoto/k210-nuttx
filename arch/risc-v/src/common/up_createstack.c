@@ -123,11 +123,15 @@
 
 int up_create_stack(FAR struct tcb_s *tcb, size_t stack_size, uint8_t ttype)
 {
+  uarths_puts(__func__);
   /* Is there already a stack allocated of a different size?  Because of
    * alignment issues, stack_size might erroneously appear to be of a
    * different size.  Fortunately, this is not a critical operation.
    */
+  char str[256];
 
+  sprintf(str,"stack size : %d, %p, %d\r\n ",stack_size, tcb->stack_alloc_ptr, tcb->adj_stack_size );
+  uarths_puts(str);
   if (tcb->stack_alloc_ptr && tcb->adj_stack_size != stack_size)
     {
       /* Yes.. Release the old stack */
@@ -168,6 +172,8 @@ int up_create_stack(FAR struct tcb_s *tcb, size_t stack_size, uint8_t ttype)
 #endif
     }
 
+  sprintf(str,"stack size : %d, %p, %d\r\n ",stack_size, tcb->stack_alloc_ptr, tcb->adj_stack_size );
+  uarths_puts(str);
   /* Did we successfully allocate a stack? */
 
   if (tcb->stack_alloc_ptr)
@@ -206,9 +212,12 @@ int up_create_stack(FAR struct tcb_s *tcb, size_t stack_size, uint8_t ttype)
       tcb->adj_stack_ptr  = (FAR uint32_t *)top_of_stack;
       tcb->adj_stack_size = size_of_stack;
 
+  sprintf(str,"stack size : %d, %p, %d , %x\r\n ",stack_size, tcb->stack_alloc_ptr, tcb->adj_stack_size, top_of_stack );
+  uarths_puts(str);
       board_autoled_on(LED_STACKCREATED);
       return OK;
     }
 
-   return ERROR;
+  uarths_puts(__func__);
+  return ERROR;
 }

@@ -103,7 +103,7 @@ static uint64_t g_systick = 0;
  *
  ****************************************************************************/
 
-static int k210_timerisr(int irq, void *context, FAR void *arg)
+static int k210_systick(int irq, void *context, FAR void *arg)
 {
   /* Process timer interrupt */
 
@@ -137,6 +137,10 @@ uint64_t up_get_systick(void)
  *   the timer interrupt.
  *
  ****************************************************************************/
+void K210_timer_int(void){
+  uarths_puts("dispatch\r\n");
+  irq_dispatch(K210_IRQ_SYSTICK, NULL);
+}
 
 void riscv_timer_initialize(void)
 {
@@ -161,8 +165,8 @@ void riscv_timer_initialize(void)
 #else 
 
   clint_timer_init();
-  clint_timer_register(k210_timerisr,NULL);
-  (void)irq_attach(K210_IRQ_SYSTICK, k210_timerisr, NULL);
+  clint_timer_register(K210_timer_int,NULL);
+  (void)irq_attach(K210_IRQ_SYSTICK, k210_systick, NULL);
   up_enable_irq(K210_IRQ_SYSTICK);
 #endif
 }

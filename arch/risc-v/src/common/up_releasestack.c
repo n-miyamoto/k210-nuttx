@@ -92,6 +92,7 @@
 
 void up_release_stack(FAR struct tcb_s *dtcb, uint8_t ttype)
 {
+  uarths_puts(__func__);
   /* Is there a stack allocated? */
 
   if (dtcb->stack_alloc_ptr)

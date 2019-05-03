@@ -113,14 +113,20 @@
 
 FAR void *up_stack_frame(FAR struct tcb_s *tcb, size_t frame_size)
 {
+  uarths_puts(__func__);
   uintptr_t topaddr;
 
   /* Align the frame_size */
 
+  uarths_puts("align up\r\n");
   frame_size = STACK_ALIGN_UP(frame_size);
+  uarths_puts("align up after \r\n");
 
   /* Is there already a stack allocated? Is it big enough? */
-
+  char str[256];
+  sprintf(str,"stackalloc ptr : %d, %p, %d, %p\r\n ",frame_size, tcb->stack_alloc_ptr, tcb->adj_stack_size, tcb->adj_stack_ptr);
+  uarths_puts(str);
+  uarths_puts("if\r\n");
   if (!tcb->stack_alloc_ptr || tcb->adj_stack_size <= frame_size)
     {
       return NULL;
@@ -134,10 +140,13 @@ FAR void *up_stack_frame(FAR struct tcb_s *tcb, size_t frame_size)
 
   /* Reset the initial stack pointer */
 
-  tcb->xcp.regs[REG_SP] = (uint32_t)tcb->adj_stack_ptr;
+  tcb->xcp.regs[REG_SP] = (uint64_t)tcb->adj_stack_ptr;
 
   /* And return the pointer to the allocated region */
-
-  return (FAR void *)(topaddr + sizeof(uint32_t));
+  void*  ptr = (FAR void *)(topaddr + sizeof(uint32_t));
+  sprintf(str,"stackframe size : %d, %p, %d, %d, %p\r\n ",frame_size, tcb->adj_stack_ptr, tcb->adj_stack_size, tcb->adj_stack_size  , ptr);
+  uarths_puts(str);
+  return ptr;
+  //return (FAR void *)(topaddr + sizeof(uint32_t));
 }
 

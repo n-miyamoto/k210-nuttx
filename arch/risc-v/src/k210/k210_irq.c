@@ -74,7 +74,7 @@ volatile uint32_t *g_current_regs;
  *   Dump the EPIC priority register settings
  *
  ****************************************************************************/
-
+#if 0
 void epic_dump(void)
 {
    uint64_t reg;
@@ -99,7 +99,7 @@ void epic_dump(void)
    sprintf(str, "SYSTICK  = 0x%08X\r", (int) reg);
    up_puts(str);
 }
-
+#endif
 /****************************************************************************
  * Name: nr5_trap
  *
@@ -131,6 +131,10 @@ int k210_trap_handler(int irq, void *context, FAR void *arg)
   __asm__ volatile ("ebreak");
 #endif
   return 0;
+}
+
+void k210_swint(void){
+  irq_dispatch(K210_IRQ_SOFTWARE, NULL);
 }
 
 /****************************************************************************
@@ -223,9 +227,7 @@ void up_irqinitialize(void)
   clint_ipi_init();
   
   irq_attach(K210_IRQ_SOFTWARE, up_swint, NULL);
-  uarths_puts("enable irq\r\n");
-up_enable_irq(K210_IRQ_SOFTWARE);
-  uarths_puts("enable irq\r\n");
+  up_enable_irq(K210_IRQ_SOFTWARE);
 #endif
 }
 
