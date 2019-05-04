@@ -73,8 +73,8 @@
 
 void up_unblock_task(struct tcb_s *tcb)
 {
+  uarths_puts(__func__);
   struct tcb_s *rtcb = this_task();
-
   /* Verify that the context switch can be performed */
 
   DEBUGASSERT((tcb->task_state >= FIRST_BLOCKED_STATE) &&
@@ -97,7 +97,6 @@ void up_unblock_task(struct tcb_s *tcb)
       /* Update scheduler parameters */
 
       sched_suspend_scheduler(rtcb);
-
       /* Are we in an interrupt handler? */
 
       if (g_current_regs)
@@ -150,7 +149,9 @@ void up_unblock_task(struct tcb_s *tcb)
           sched_resume_scheduler(nexttcb);
 
           /* Then switch contexts */
-
+          //char tmpstr[256];
+          //char str[256];
+          //:uarths_puts(">>> before switch context\r\n");
           up_switchcontext(rtcb->xcp.regs, nexttcb->xcp.regs);
 
           /* up_switchcontext forces a context switch to the task at the

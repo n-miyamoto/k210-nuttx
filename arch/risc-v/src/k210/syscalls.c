@@ -145,9 +145,19 @@ handle_ecall_s(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fre
 {
     return epc;
 }
+
 uintptr_t __attribute__((weak)) 
 handle_ecall_m(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fregs[32])
 {
+    //char str[256];
+    //sprintf(str, "%d %d %d\r\n", epc, sizeof(uintptr_t), sizeof(char*));
+    //uarths_puts(str);
+    //uarths_puts("syscall \r\n");
+    irq_dispatch(K210_IRQ_SOFTWARE, regs);
+    //sprintf(str, "%x %p \r\n", epc, (void*)sys_call2);
+    //uarths_puts(str);
+    epc+=4;
+    //uarths_puts("finish dispatch\r\n");
     return epc;
 }
 uintptr_t __attribute__((weak))
@@ -349,7 +359,10 @@ handle_fault_store(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t
 
 uintptr_t handle_syscall(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fregs[32])
 {
-
+    //char str[256];
+    //sprintf(str, "%x\r\n", epc/*, epc, regs[0]*/);
+    //if(cause == 0x0b) uarths_puts(str);
+    //uarths_puts(">>>syscall\r\n");
     static uintptr_t (* const cause_table[])(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fregs[32]) =
     {
         [CAUSE_MISALIGNED_FETCH]      = handle_misaligned_fetch,
@@ -365,8 +378,9 @@ uintptr_t handle_syscall(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uin
         [CAUSE_HYPERVISOR_ECALL]      = handle_ecall_s,
         [CAUSE_MACHINE_ECALL]         = handle_ecall_m,
     };
-
-    return cause_table[cause](cause, epc, regs, fregs);
+    uintptr_t tmp =  cause_table[cause](cause, epc, regs, fregs);
+    //return cause_table[cause](cause, epc, regs, fregs);
+    return tmp;
 }
 
 size_t get_free_heap_size(void)

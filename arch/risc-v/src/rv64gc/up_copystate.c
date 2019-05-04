@@ -66,7 +66,7 @@
 
 /* A little faster than most memcpy's */
 
-void up_copystate(uint32_t *dest, uint32_t *src)
+void up_copystate(uint64_t *dest, uint64_t *src)
 {
   uarths_puts(__func__);
   int i;

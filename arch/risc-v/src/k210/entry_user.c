@@ -85,14 +85,8 @@ void __start(int core_id, int number_of_cores)
 
         //while(1)
         {
-            char str[100];
-            sprintf(str, "%p, %p, %p, %p\r\n", _heap_start, _heap_end , _tbss, _tdata);
-            uarths_puts(str);
-            sprintf(str, "%p, %x\r\n",&g_idle_topstack, g_idle_topstack );
             for(int i=0;i<10000000;i++);
-            //printf("hello world\r\n");
             uarths_puts("Hello world!!\r\n");
-            uarths_puts(str);
         }
 
         core1_instance.callback = NULL;
@@ -144,6 +138,7 @@ void __start(int core_id, int number_of_cores)
     }
     else
     {
+        while(1);
         //thread_entry(core_id);
         //if(core1_instance.callback == NULL)
         //    asm volatile ("wfi");

@@ -133,13 +133,15 @@ int k210_trap_handler(int irq, void *context, FAR void *arg)
   return 0;
 }
 
-void k210_swint(void){
-  irq_dispatch(K210_IRQ_SOFTWARE, NULL);
-}
 
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
+void K210_swint_callback(void){
+  uarths_puts("K210 callback\r\n");
+  while(1);
+  irq_dispatch(K210_IRQ_SOFTWARE, NULL);
+}
 
 /****************************************************************************
  * Name: up_irqinitialize
@@ -222,14 +224,11 @@ void up_irqinitialize(void)
 
   __asm__ volatile("csrrs a0, %0, 3" :: "i"(CSR_MIE));
 #else 
-  plic_init();
-  clint_timer_init();
-  clint_ipi_init();
-  
   irq_attach(K210_IRQ_SOFTWARE, up_swint, NULL);
   up_enable_irq(K210_IRQ_SOFTWARE);
 #endif
 }
+
 
 /****************************************************************************
  * Name: up_disable_irq
@@ -260,7 +259,6 @@ void up_enable_irq(int irq)
       clint_timer_start(10,0);
       break;
     case K210_IRQ_SOFTWARE:
-      clint_ipi_enable();
       break;
     default:
       break;
@@ -329,8 +327,7 @@ int up_prioritize_irq(int irq, int priority)
 
 irqstate_t up_irq_save(void)
 {
-  uarths_puts(__func__);
-  irqstate_t   newpri = (2 << 2) | 3;
+  irqstate_t   newpri = 0;
   irqstate_t   oldpri;
 
   /* Set the new IRQ Priority level to level 2, enabled.
@@ -356,7 +353,6 @@ irqstate_t up_irq_save(void)
 
 void up_irq_restore(irqstate_t pri)
 {
-  uarths_puts(__func__);
   //__asm__ volatile("csrw %0, %1" :: "i"(K210_EPIC_PRIMASK), "r"(pri));
   __asm__ volatile("csrw %0, %1" :: "i"(CSR_MIE), "r"(pri));
 }
@@ -371,7 +367,6 @@ void up_irq_restore(irqstate_t pri)
 
 irqstate_t up_irq_enable(void)
 {
-  uarths_puts(__func__);
   irqstate_t   newpri = up_get_newintctx();
   irqstate_t   oldpri;
 

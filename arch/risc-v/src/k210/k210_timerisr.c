@@ -107,7 +107,7 @@ static int k210_systick(int irq, void *context, FAR void *arg)
 {
   /* Process timer interrupt */
 
-  uarths_puts("tick!\r\n");
+  //uarths_puts("tick!\r\n");
   nxsched_process_timer();
   return 0;
 }
@@ -126,6 +126,7 @@ static int k210_systick(int irq, void *context, FAR void *arg)
 
 uint64_t up_get_systick(void)
 {
+  //uarths_puts("tick\r\n");
   return g_systick;
 }
 
@@ -138,7 +139,6 @@ uint64_t up_get_systick(void)
  *
  ****************************************************************************/
 void K210_timer_int(void){
-  uarths_puts("dispatch\r\n");
   irq_dispatch(K210_IRQ_SYSTICK, NULL);
 }
 
@@ -163,10 +163,9 @@ void riscv_timer_initialize(void)
 
   up_enable_irq(K210_IRQ_SYSTICK);
 #else 
-
   clint_timer_init();
   clint_timer_register(K210_timer_int,NULL);
-  (void)irq_attach(K210_IRQ_SYSTICK, k210_systick, NULL);
+  irq_attach(K210_IRQ_SYSTICK, k210_systick, NULL);
   up_enable_irq(K210_IRQ_SYSTICK);
 #endif
 }

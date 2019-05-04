@@ -62,7 +62,7 @@
 
 void up_idle(void)
 {
-  uarths_puts(__func__);
+  //uarths_puts(__func__);
 #if defined(CONFIG_SUPPRESS_INTERRUPTS) || defined(CONFIG_SUPPRESS_TIMER_INTS)
   /* If the system is idle and there are no timer interrupts, then process
    * "fake" timer interrupts. Hopefully, something will wake up.

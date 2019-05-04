@@ -55,11 +55,16 @@
  * however, the stack must be aligned to 8-byte addresses.
  */
 
+#define RV64GC
+
 #ifdef CONFIG_LIBC_FLOATINGPOINT
+#  define STACK_ALIGNMENT   8
+#elif defined RV64GC
 #  define STACK_ALIGNMENT   8
 #else
 #  define STACK_ALIGNMENT   4
 #endif
+
 
 /* Stack alignment macros */
 
@@ -110,7 +115,7 @@
  *     the same as the alignment of the stack itself.
  *
  ****************************************************************************/
-
+#ifndef RV64GC
 FAR void *up_stack_frame(FAR struct tcb_s *tcb, size_t frame_size)
 {
   uarths_puts(__func__);
@@ -149,4 +154,52 @@ FAR void *up_stack_frame(FAR struct tcb_s *tcb, size_t frame_size)
   return ptr;
   //return (FAR void *)(topaddr + sizeof(uint32_t));
 }
+#else
+FAR void *up_stack_frame(FAR struct tcb_s *tcb, size_t frame_size)
+{
+  uarths_puts(__func__);
+  uintptr_t topaddr;
 
+  uint32_t* testptr =  (uint32_t)tcb->adj_stack_ptr -4;
+  *testptr = 0x0000;
+  testptr[0] = 1;
+  testptr[1] = 0x02;
+  testptr[2] = 0x02;
+  testptr = tcb->adj_stack_ptr;
+
+  testptr[0] = 1;
+
+  /* Align the frame_size */
+
+  uarths_puts("align up\r\n");
+  frame_size = STACK_ALIGN_UP(frame_size);
+  uarths_puts("align up after \r\n");
+
+  /* Is there already a stack allocated? Is it big enough? */
+  char str[256];
+  sprintf(str,"stackalloc ptr : %d, %p, %d, %p\r\n ",frame_size, tcb->stack_alloc_ptr, tcb->adj_stack_size, tcb->adj_stack_ptr);
+  uarths_puts(str);
+  uarths_puts("if\r\n");
+  if (!tcb->stack_alloc_ptr || tcb->adj_stack_size <= frame_size)
+    {
+      return NULL;
+    }
+
+  /* Save the adjusted stack values in the struct tcb_s */
+
+  topaddr               = (uintptr_t)tcb->adj_stack_ptr - frame_size;
+  tcb->adj_stack_ptr    = (FAR void *)topaddr;
+  tcb->adj_stack_size  -= frame_size;
+
+  /* Reset the initial stack pointer */
+
+  tcb->xcp.regs[REG_SP] = (uint64_t)tcb->adj_stack_ptr;
+
+  /* And return the pointer to the allocated region */
+  void*  ptr = (FAR void *)(topaddr + sizeof(uint32_t));
+  sprintf(str,"stackframe size : %d, %p, %d, %d, %p\r\n ",frame_size, tcb->adj_stack_ptr, tcb->adj_stack_size, tcb->adj_stack_size  , ptr);
+  uarths_puts(str);
+  return ptr;
+  //return (FAR void *)(topaddr + sizeof(uint32_t));
+}
+#endif

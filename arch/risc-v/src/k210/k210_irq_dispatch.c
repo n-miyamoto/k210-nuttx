@@ -73,7 +73,7 @@ volatile uint32_t * g_current_regs;
 /****************************************************************************
  * irq_dispatch_all
  ****************************************************************************/
-
+#if 1
 uint64_t * irq_dispatch_all(uint64_t *regs, uint32_t irqmask)
 {
   uarths_puts(__func__);
@@ -154,3 +154,4 @@ uint64_t * irq_dispatch_all(uint64_t *regs, uint32_t irqmask)
   return regs;
 }
 
+#endif

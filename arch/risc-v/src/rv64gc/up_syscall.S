@@ -104,9 +104,20 @@ sys_call5:	/* a0 holds the syscall number, arguments in a1, a2, a3, a4 and a5 */
 
 	nop
 	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
 
 	/* Then return with the result of the software interrupt in v0 */
-
+	
 	ret
 	nop
 

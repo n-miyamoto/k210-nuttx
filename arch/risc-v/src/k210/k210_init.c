@@ -65,7 +65,6 @@ void __k210_init(void)
   k210_boardinitialize();
 
   /* Call nx_start() */
-
   nx_start();
 
   /* Shouldn't get here */

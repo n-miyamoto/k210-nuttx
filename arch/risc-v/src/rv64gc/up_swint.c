@@ -131,7 +131,7 @@ static void dispatch_syscall(void)
 int up_swint(int irq, FAR void *context, FAR void *arg)
 {
   uarths_puts("up swint\r\n");
-  uint32_t *regs = (uint32_t *)context;
+  uint64_t *regs = (uint64_t *)context;
 
   DEBUGASSERT(regs && regs == g_current_regs);
 
@@ -147,6 +147,7 @@ int up_swint(int irq, FAR void *context, FAR void *arg)
 
   /* Handle the SWInt according to the command in $a0 */
 
+  uarths_puts("switch\r\n");
   switch (regs[REG_A0])
     {
       /* A0=SYS_restore_context: This a restore context command:
@@ -167,7 +168,7 @@ int up_swint(int irq, FAR void *context, FAR void *arg)
       case SYS_restore_context:
         {
           DEBUGASSERT(regs[REG_A1] != 0);
-          g_current_regs = (uint32_t *)regs[REG_A1];
+          g_current_regs = (uint64_t *)regs[REG_A1];
         }
         break;
 
@@ -189,10 +190,17 @@ int up_swint(int irq, FAR void *context, FAR void *arg)
 
       case SYS_switch_context:
         {
+          char str[256];
+          sprintf(str, "%x, %x\r\n", regs[REG_A1], regs[REG_A2]);
+          uarths_puts(str);
           DEBUGASSERT(regs[REG_A1] != 0 && regs[REG_A2] != 0);
-          up_copystate((uint32_t *)regs[REG_A1], regs);
-          g_current_regs = (uint32_t *)regs[REG_A2];
+          up_copystate((uint64_t *)regs[REG_A1], regs);
+          uarths_puts("after copy\r\n");
+          g_current_regs = regs[REG_A2];
         }
+        break;
+      case 3:
+          uarths_puts("dummy\r\n");
         break;
 
       /* A0=SYS_syscall_return: This a switch context command:
