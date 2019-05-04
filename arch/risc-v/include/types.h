@@ -80,8 +80,10 @@ typedef unsigned long long _uint64_t;
 
 /* A pointer is 4 bytes */
 
-typedef signed int         _intptr_t;
-typedef unsigned int       _uintptr_t;
+//typedef signed int         _intptr_t;
+//typedef unsigned int       _uintptr_t;
+typedef signed long long         _intptr_t;
+typedef unsigned long long        _uintptr_t;
 
 /* This is the size of the interrupt state save returned by irqsave().  */
 

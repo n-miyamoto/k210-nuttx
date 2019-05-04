@@ -190,12 +190,12 @@ int up_swint(int irq, FAR void *context, FAR void *arg)
 
       case SYS_switch_context:
         {
-          char str[256];
-          sprintf(str, "%x, %x\r\n", regs[REG_A1], regs[REG_A2]);
-          uarths_puts(str);
+          //char str[256];
+          //sprintf(str, "%x, %x\r\n", regs[REG_A1], regs[REG_A2]);
+          //uarths_puts(str);
           DEBUGASSERT(regs[REG_A1] != 0 && regs[REG_A2] != 0);
-          up_copystate((uint64_t *)regs[REG_A1], regs);
-          uarths_puts("after copy\r\n");
+          up_copystate((uint64_t*)regs[REG_A1], regs);
+          //up_copystate(regs, (uint64_t*)regs[REG_A2]);
           g_current_regs = regs[REG_A2];
         }
         break;

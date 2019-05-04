@@ -38,6 +38,7 @@
 #include "syslog.h"
 //#include "dump.h"
 #include "encoding.h"
+#include "up_internal.h"
 
 /**
  * @note       System call list
@@ -149,15 +150,25 @@ handle_ecall_s(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fre
 uintptr_t __attribute__((weak)) 
 handle_ecall_m(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fregs[32])
 {
-    //char str[256];
-    //sprintf(str, "%d %d %d\r\n", epc, sizeof(uintptr_t), sizeof(char*));
-    //uarths_puts(str);
+    uint64_t* ptr = (uint64_t*)regs;
+    uint64_t* ptr2 =(uint64_t*)regs[12];
+    char str[256];
+    sprintf(str, "\r\nfin %x %x %d %x %x %d\r\n", epc, ptr ,ptr[10], ptr[11] ,ptr[12], sizeof(uintptr_t));
+    uarths_puts(str);
     //uarths_puts("syscall \r\n");
     irq_dispatch(K210_IRQ_SOFTWARE, regs);
-    //sprintf(str, "%x %p \r\n", epc, (void*)sys_call2);
-    //uarths_puts(str);
-    epc+=4;
+    sprintf(str, "\r\nfin %x %x %x %x %x %p %p\r\n", epc, ptr, (uintptr_t)ptr[0], ptr[11] ,ptr[12], g_current_regs);
+    uarths_puts(str);
     //uarths_puts("finish dispatch\r\n");
+    //epc = (uintptr_t)ptr[0];
+    //epc+=4;
+    //return epc;
+    //void (*func)(void);
+    //func = ptr2[0];
+    //(*func)();
+    //ptr2 = g_current_regs;
+    epc = ((uint64_t*)g_current_regs)[0];
+    //return ptr2[0];
     return epc;
 }
 uintptr_t __attribute__((weak))
@@ -380,6 +391,7 @@ uintptr_t handle_syscall(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uin
     };
     uintptr_t tmp =  cause_table[cause](cause, epc, regs, fregs);
     //return cause_table[cause](cause, epc, regs, fregs);
+    uarths_puts("before return \r\n");
     return tmp;
 }
 
