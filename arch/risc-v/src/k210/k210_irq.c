@@ -256,7 +256,7 @@ void up_enable_irq(int irq)
 {
   switch(irq){
     case K210_IRQ_SYSTICK:
-      clint_timer_start(10,0);
+      clint_timer_start(10,0); //todo fix 10
       break;
     case K210_IRQ_SOFTWARE:
       break;
@@ -327,7 +327,7 @@ int up_prioritize_irq(int irq, int priority)
 
 irqstate_t up_irq_save(void)
 {
-  irqstate_t   newpri = 0;
+  irqstate_t   newpri = 1<<7;
   irqstate_t   oldpri;
 
   /* Set the new IRQ Priority level to level 2, enabled.
