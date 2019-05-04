@@ -134,13 +134,14 @@ void up_lowputc(char ch)
 #ifdef HAVE_SERIAL_CONSOLE
   /* Wait until the TX data register is empty */
 
-  while ((getreg32(K210_CONSOLE_BASE + K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_TX_EMPTY) == 0)
-    ;
+  //while ((getreg32(K210_CONSOLE_BASE + K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_TX_EMPTY) == 0)
+  //  ;
 
   /* Then send the character */
 
-  putreg32((uint32_t)ch, K210_CONSOLE_BASE + K210_UART_TX_REG_OFFSET);
+  //putreg32((uint32_t)ch, K210_CONSOLE_BASE + K210_UART_TX_REG_OFFSET);
 
+  uarths_putchar(ch);
 #endif /* HAVE_CONSOLE */
 }
 

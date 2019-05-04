@@ -51,7 +51,7 @@
 /************************************************************************************
  * Private Types
  ************************************************************************************/
-
+#if 0
 struct k210_uart_buffer_s
 {
   uint16_t    head;
@@ -77,6 +77,7 @@ struct k210_uart_s
   struct k210_uart_buffer_s        *txbuf;
   struct k210_uart_buffer_s        *rxbuf;
 };
+#endif
 
 /************************************************************************************
  * Private Data
@@ -84,7 +85,8 @@ struct k210_uart_s
 
 /* Static global pointers to access the hardware */
 
-#ifdef CONFIG_K210_HAVE_UART1
+//#ifdef CONFIG_K210_HAVE_UART1
+#if 0
 static char g_uart1_rx_buf[CONFIG_K210_UART_RX_BUF_SIZE];
 static char g_uart1_tx_buf[CONFIG_K210_UART_TX_BUF_SIZE];
 
@@ -128,7 +130,7 @@ static struct k210_uart_s g_nr5_uart1 =
  ************************************************************************************/
 
 /* ISR for NanoRisc5 UART RX available. */
-
+#if 0
 int k210_uart_rx_isr(int irq_num, void *context)
 {
   struct k210_uart_s *dev = NULL;
@@ -261,3 +263,4 @@ void k210_uart_put_tx(uint8_t ch)
    *g_k210_uart1.regs->ptx = ch;
 }
 
+#endif

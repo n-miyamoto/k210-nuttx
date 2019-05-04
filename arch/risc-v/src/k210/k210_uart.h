@@ -38,12 +38,12 @@
 #ifdef CONFIG_K210
 #include "chip/k210_uart.h"
 #endif
-
+#if 0
 void k210_uart_init(int uart_num);
 uint8_t k210_uart_get_rx(void);
 int  k210_uart_test_rx_avail(void);
 int  k210_uart_test_tx_empty(void);
 void k210_uart_put_tx(uint8_t ch);
-
+#endif
 #endif  /* _ARCH_RISCV_SRC_K210_UART_H */
 
