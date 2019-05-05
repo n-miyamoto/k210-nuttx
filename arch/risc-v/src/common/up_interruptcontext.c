@@ -64,8 +64,15 @@
  * the interrupt handler context.
  ****************************************************************************/
 
+volatile uintptr_t* g_current_regs;
+
 bool up_interrupt_context(void)
 {
   uarths_puts(__func__);
-   return g_current_regs != NULL;
+  //char str[256]="";
+  //sprintf(str, "int %p %p\r\n",  &g_current_regs, g_current_regs);
+  //uarths_puts(str);
+  //if(g_current_regs==NULL) uarths_puts("false!!!");
+  //g_current_regs = NULL;
+  return g_current_regs != NULL;
 }

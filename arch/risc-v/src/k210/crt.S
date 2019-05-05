@@ -213,6 +213,7 @@ trap_entry:
 
   csrr a0, mcause
   csrr a1, mepc
+  SREG a1, 0*REGBYTES(sp)
   mv a2, sp
   add a3, sp, 32*REGBYTES
   bgez a0, .handle_syscall
@@ -224,7 +225,7 @@ trap_entry:
 .restore:
   csrw mepc, a0
   LREG x1, 1*REGBYTES(sp)
-  LREG x2, 2*REGBYTES(sp)
+//LREG x2, 2*REGBYTES(sp)
   LREG x3, 3*REGBYTES(sp)
   LREG x4, 4*REGBYTES(sp)
   LREG x5, 5*REGBYTES(sp)
