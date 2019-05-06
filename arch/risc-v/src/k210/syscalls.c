@@ -175,7 +175,7 @@ handle_ecall_m(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fre
     //g_current_regs = regs;
     //uarths_puts("syscall \r\n");
     irq_dispatch(K210_IRQ_SOFTWARE, regs);
-    ptr[2] -=4;
+    //ptr[2] -=4;
     sprintf(str, "\r\nfin %x %x %x %x %x %p %p\r\n", epc, ptr, (uintptr_t)ptr[2], ptr[11] ,ptr[12], &g_current_regs, g_current_regs);
     uarths_puts(str);
     void* tmp = g_current_regs;

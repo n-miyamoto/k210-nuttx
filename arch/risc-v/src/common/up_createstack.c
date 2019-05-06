@@ -59,11 +59,10 @@
 /* MIPS requires at least a 4-byte stack alignment.  For floating point use,
  * however, the stack must be aligned to 8-byte addresses.
  */
-
 #ifdef CONFIG_LIBC_FLOATINGPOINT
 #  define STACK_ALIGNMENT   8
 #else
-#  define STACK_ALIGNMENT   4
+#  define STACK_ALIGNMENT   8
 #endif
 
 /* Stack alignment macros */
@@ -159,7 +158,7 @@ int up_create_stack(FAR struct tcb_s *tcb, size_t stack_size, uint8_t ttype)
         {
           /* Use the user-space allocator if this is a task or pthread */
 
-          tcb->stack_alloc_ptr = (uint32_t *)kumm_malloc(stack_size);
+          tcb->stack_alloc_ptr = (uint64_t *)kumm_malloc(stack_size);
         }
 
 #ifdef CONFIG_DEBUG_FEATURES
@@ -196,7 +195,7 @@ int up_create_stack(FAR struct tcb_s *tcb, size_t stack_size, uint8_t ttype)
        * the stack are referenced as positive word offsets from sp.
        */
 
-      top_of_stack = (uint32_t)tcb->stack_alloc_ptr + stack_size - 4;
+      top_of_stack = (uint32_t)tcb->stack_alloc_ptr + stack_size - 8;
 
       /* The MIPS stack must be aligned at word (4 byte) boundaries; for
        * floating point use, the stack must be aligned to 8-byte addresses.
@@ -205,7 +204,7 @@ int up_create_stack(FAR struct tcb_s *tcb, size_t stack_size, uint8_t ttype)
        */
 
       top_of_stack = STACK_ALIGN_DOWN(top_of_stack);
-      size_of_stack = top_of_stack - (uint32_t)tcb->stack_alloc_ptr + 4;
+      size_of_stack = top_of_stack - (uint32_t)tcb->stack_alloc_ptr + 8;
 
       /* Save the adjusted stack values in the struct tcb_s */
 
