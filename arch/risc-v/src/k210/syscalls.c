@@ -169,18 +169,19 @@ handle_ecall_m(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fre
     //uint64_t* ptr2 =(uint64_t*)regs[12];
     char str[256];
     //sprintf(str, "\r\nfin %x %x %d %x %x %d\r\n", epc, ptr ,ptr[10], ptr[11] ,ptr[12], sizeof(uintptr_t));
-    g_current_regs = regs;
-    //sprintf(str, "\r\nfin %x %x %x %x %x %p %p\r\n", epc, ptr, (uintptr_t)ptr[0], ptr[11] ,ptr[12], &g_current_regs, g_current_regs);
-    //uarths_puts(str);
+    g_current_regs = (uint64_t*)regs;
+    sprintf(str, "\r\nfin %x %x %x %x %x %p %p\r\n", epc, ptr, (uintptr_t)ptr[2], ptr[11] ,ptr[12], &g_current_regs, g_current_regs);
+    uarths_puts(str);
     //g_current_regs = regs;
     //uarths_puts("syscall \r\n");
     irq_dispatch(K210_IRQ_SOFTWARE, regs);
-    sprintf(str, "\r\nfin %x %x %x %x %x %p %p\r\n", epc, ptr, (uintptr_t)ptr[0], ptr[11] ,ptr[12], &g_current_regs, g_current_regs);
+    ptr[2] -=4;
+    sprintf(str, "\r\nfin %x %x %x %x %x %p %p\r\n", epc, ptr, (uintptr_t)ptr[2], ptr[11] ,ptr[12], &g_current_regs, g_current_regs);
     uarths_puts(str);
     void* tmp = g_current_regs;
     epc = ((uint64_t*)tmp)[0];
     
-    //g_current_regs = (void*)0;
+    g_current_regs = NULL;
     //sprintf(str, "\r\nfin %x %x %x %x %x %p %p\r\n", epc, ptr, (uintptr_t)ptr[0], ptr[11] ,ptr[12], &g_current_regs, g_current_regs);
     //uarths_puts(str);
     //uarths_puts("finish dispatch\r\n");
@@ -399,10 +400,10 @@ static void set_reg_null(void){
 uintptr_t handle_syscall(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fregs[32])
 {
     uarths_puts(__func__);
-    //char str[256];
-    //sprintf(str, "%x\r\n", epc/*, epc, regs[0]*/);
+    char str[256];
+    sprintf(str, "%x\r\n", cause/*, epc, regs[0]*/);
     //if(cause == 0x0b) uarths_puts(str);
-    //uarths_puts(">>>syscall\r\n");
+    uarths_puts(str);
     static uintptr_t (* const cause_table[])(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fregs[32]) =
     {
         [CAUSE_MISALIGNED_FETCH]      = handle_misaligned_fetch,
