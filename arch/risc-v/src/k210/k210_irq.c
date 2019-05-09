@@ -230,7 +230,23 @@ void up_irqinitialize(void)
 #endif
 }
 
+/****************************************************************************
+ * Name: _current_privilege
+ *
+ * Description:
+ *   Get the current privilege mode. 0x0 for user mode, and 0x3 for machine
+ *   mode.
+ *
+ ****************************************************************************/
 
+static inline uint32_t _current_privilege(void)
+{
+  uint32_t result;
+
+  asm volatile ("csrr %0, 0xC10" : "=r" (result));
+
+  return result;
+}
 /****************************************************************************
  * Name: up_disable_irq
  *
@@ -328,20 +344,23 @@ int up_prioritize_irq(int irq, int priority)
 
 irqstate_t up_irq_save(void)
 {
-  irqstate_t   newpri = 1<<7;
-  irqstate_t   oldpri;
-
-  /* Set the new IRQ Priority level to level 2, enabled.
-   * This will allow SW and DEBUG / TRAP interrupts to
-   * continue to fire, but no general purpose ints.
-   */
-
-  //__asm__ volatile("csrrw %0, %1, %2" : "=r"(oldpri) :
-  //                 "i"(K210_EPIC_PRIMASK), "r"(newpri));
-  __asm__ volatile("csrrw %0, %1, %2" : "=r"(oldpri) :
-                     "i"(CSR_MIE), "r"(newpri));
-
-  return oldpri;
+  uarths_puts(__func__);
+  uint32_t oldstat, newstat;
+  if (_current_privilege())
+    {
+      /* Machine mode: Unset MIE and UIE */
+      asm volatile("csrr %0, %1" : "=r"(oldstat) :"i"(CSR_MSTATUS));
+      newstat = oldstat & ~(0x9);
+      asm volatile("csrw %0, %1" ::"i"(CSR_MSTATUS) ,  "r"(newstat) );
+    }
+  else
+    {
+      /* User mode: Unset UIE */
+      asm volatile("csrr %0, %1" : "=r"(oldstat) :"i"(CSR_SSTATUS));
+      newstat = oldstat & ~(1L << 0);
+      asm volatile("csrw %0, %1" ::"i"(CSR_SSTATUS) ,  "r"(newstat) );
+    }
+  return oldstat;
 }
 
 /****************************************************************************
@@ -354,8 +373,16 @@ irqstate_t up_irq_save(void)
 
 void up_irq_restore(irqstate_t pri)
 {
-  //__asm__ volatile("csrw %0, %1" :: "i"(K210_EPIC_PRIMASK), "r"(pri));
-  __asm__ volatile("csrw %0, %1" :: "i"(CSR_MIE), "r"(pri));
+  if (_current_privilege())
+    {
+      /* Machine mode - mstatus */
+      asm volatile("csrw %0, %1" ::"i"(CSR_MSTATUS) ,  "r"(pri) );
+    }
+  else
+    {
+      /* User mode - ustatus */
+      asm volatile("csrw %0, %1" ::"i"(CSR_SSTATUS) ,  "r"(pri) );
+    }
 }
 
 /****************************************************************************
@@ -368,15 +395,10 @@ void up_irq_restore(irqstate_t pri)
 
 irqstate_t up_irq_enable(void)
 {
-  irqstate_t   newpri = up_get_newintctx();
-  irqstate_t   oldpri;
+  uint32_t oldstat, newstat;
 
-  /* Set the new IRQ Priority level to level 5, enabled.  This will allow
-   * all interrupt.
-   */
-
-  __asm__ volatile("csrrw %0, %1, %2" : "=r"(oldpri) :
-                   "i"(K210_EPIC_PRIMASK), "r"(newpri));
-
-  return oldpri;
+  asm volatile("csrr %0, %1" : "=r"(oldstat) :"i"(CSR_MSTATUS));
+  newstat = oldstat & ~(0x9);
+  asm volatile("csrw %0, %1" ::"i"(CSR_MSTATUS) ,  "r"(newstat) );
+  return oldstat;
 }

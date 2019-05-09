@@ -223,6 +223,8 @@ trap_entry:
 .handle_syscall:
   jal handle_syscall
   csrw mepc, a0
+  //li a0, 0x1890     /* machine mode, UPIE & MPIE enabled */
+  //csrw mstatus, a0
   LREG x1, 1*REGBYTES(sp)
   //LREG x2, 2*REGBYTES(sp)
   LREG x3, 3*REGBYTES(sp)
