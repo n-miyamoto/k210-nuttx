@@ -64,7 +64,8 @@ int up_lsbenc(int);
  * Public Data
  ****************************************************************************/
 
-volatile uint32_t * g_current_regs;
+//volatile uint32_t * g_current_regs;
+volatile uintptr_t* g_current_regs;
 
 /****************************************************************************
  * Public Functions

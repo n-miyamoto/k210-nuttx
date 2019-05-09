@@ -48,6 +48,7 @@
 
 #include "k210.h"
 #include "encoding.h"
+#include "up_internal.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -57,8 +58,8 @@
  * Public Data
  ****************************************************************************/
 
-volatile uint32_t *g_current_regs;
-
+//volatile uint32_t *g_current_regs;
+volatile uintptr_t *g_current_regs;
 /****************************************************************************
  * Private Data
  ****************************************************************************/
