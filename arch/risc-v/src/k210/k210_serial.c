@@ -69,6 +69,7 @@
 #include "k210_config.h"
 #include "chip.h"
 #include "k210.h"
+#include "uarths.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -278,6 +279,7 @@ static void up_restoreuartint(struct uart_dev_s *dev, uint8_t im)
 
 static void up_disableuartint(struct uart_dev_s *dev, uint8_t *im)
 {
+  uarths_puts(__func__);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
   irqstate_t flags;
 
@@ -301,6 +303,7 @@ static void up_disableuartint(struct uart_dev_s *dev, uint8_t *im)
 
 static int up_setup(struct uart_dev_s *dev)
 {
+  uarths_puts(__func__);
 #ifndef CONFIG_SUPPRESS_UART_CONFIG
 //  struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
 
@@ -341,6 +344,9 @@ static void up_shutdown(struct uart_dev_s *dev)
   //nr5_uartreset(priv->uartbase);
 }
 
+void uart_callback(void){
+  irq_dispatch(K210_IRQ_UART1_RX , NULL);
+}
 /****************************************************************************
  * Name: up_attach
  *
@@ -358,11 +364,13 @@ static void up_shutdown(struct uart_dev_s *dev)
 
 static int up_attach(struct uart_dev_s *dev)
 {
+  uarths_puts(__func__);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
 
   /* Initialize interrupt generation on the peripheral */
+  //up_serialout(priv, K210_UART_CTRL_REG_OFFSET, IE_RX | IE_TX);
 
-  up_serialout(priv, K210_UART_CTRL_REG_OFFSET, IE_RX | IE_TX);
+  uarths_set_irq(UARTHS_SEND_RECEIVE, uart_callback, NULL, 1023);
   irq_attach(priv->irqrx, up_interrupt, dev);
   irq_attach(priv->irqtx, up_interrupt, dev);
 
@@ -385,6 +393,7 @@ static int up_attach(struct uart_dev_s *dev)
 
 static void up_detach(struct uart_dev_s *dev)
 {
+  uarths_puts(__func__);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
 
   /* Disable interrupts */
@@ -415,6 +424,7 @@ static void up_detach(struct uart_dev_s *dev)
 
 static int up_interrupt(int irq, void *context, FAR void *arg)
 {
+  uarths_puts(__func__);
   struct uart_dev_s *dev = (struct uart_dev_s *)arg;
   struct up_dev_s   *priv;
   int                passes;
@@ -485,6 +495,7 @@ static int up_interrupt(int irq, void *context, FAR void *arg)
 
 static int up_ioctl(struct file *filep, int cmd, unsigned long arg)
 {
+  uarths_puts(__func__);
 #ifdef CONFIG_SERIAL_TERMIOS
   struct inode      *inode;
   struct uart_dev_s *dev;
@@ -566,6 +577,7 @@ static int up_ioctl(struct file *filep, int cmd, unsigned long arg)
 
 static int up_receive(struct uart_dev_s *dev, uint32_t *status)
 {
+  uarths_puts(__func__);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
 
   /* Return status information */
@@ -590,6 +602,7 @@ static int up_receive(struct uart_dev_s *dev, uint32_t *status)
 
 static void up_rxint(struct uart_dev_s *dev, bool enable)
 {
+  uarths_puts(__func__);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
   irqstate_t flags;
   uint8_t im;
@@ -626,11 +639,13 @@ static void up_rxint(struct uart_dev_s *dev, bool enable)
 
 static bool up_rxavailable(struct uart_dev_s *dev)
 {
-  struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
+  uarths_puts(__func__);
+  //struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
 
   /* Return true is data is available in the receive data buffer */
 
-  return (up_serialin(priv, K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_RX_AVAIL) != 0;
+  //return (up_serialin(priv, K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_RX_AVAIL) != 0;
+  return !uarths_rxempty();
 }
 
 /****************************************************************************
@@ -644,7 +659,7 @@ static bool up_rxavailable(struct uart_dev_s *dev)
 static void up_send(struct uart_dev_s *dev, int ch)
 {
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
-  up_serialout(priv, K210_UART_TX_REG_OFFSET, (uint32_t)ch);
+  uarths_putchar(ch);
 }
 
 /****************************************************************************
@@ -657,6 +672,7 @@ static void up_send(struct uart_dev_s *dev, int ch)
 
 static void up_txint(struct uart_dev_s *dev, bool enable)
 {
+  //uarths_puts(__func__);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
   irqstate_t flags;
   uint8_t im;
@@ -700,11 +716,13 @@ static void up_txint(struct uart_dev_s *dev, bool enable)
 
 static bool up_txready(struct uart_dev_s *dev)
 {
+  //uarths_puts(__func__);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
 
+  //return !uarths_txfull();
   /* Return TRUE if the Transmit buffer register is not full */
-
-  return (up_serialin(priv, K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_TX_EMPTY) != 0;
+  return true;
+  //return (up_serialin(priv, K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_TX_EMPTY) != 0;
 }
 
 /****************************************************************************
@@ -717,6 +735,7 @@ static bool up_txready(struct uart_dev_s *dev)
 
 static bool up_txempty(struct uart_dev_s *dev)
 {
+  uarths_puts(__func__);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
 
   /* Return TRUE if the Transmit shift register is empty */
@@ -742,6 +761,7 @@ static bool up_txempty(struct uart_dev_s *dev)
 
 void up_earlyserialinit(void)
 {
+  uarths_puts(__func__);
   /* Disable interrupts from all UARTS.  The console is enabled in
    * nr5_consoleinit().
    */
@@ -770,6 +790,7 @@ void up_earlyserialinit(void)
 
 void up_serialinit(void)
 {
+  uarths_puts(__func__);
   /* Register the console */
 
 #ifdef HAVE_SERIAL_CONSOLE

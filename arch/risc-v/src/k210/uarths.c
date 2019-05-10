@@ -100,6 +100,15 @@ static inline int uarths_putc(char c)
     return 0;
 }
 
+uint32_t uarths_rxempty(void)
+{
+    return uarths->rxdata.empty;
+}
+uint32_t uarths_txfull(void)
+{
+    return uarths->txdata.full;
+}
+
 size_t uarths_receive_data(uint8_t *buf, size_t buf_len)
 {
     size_t i;

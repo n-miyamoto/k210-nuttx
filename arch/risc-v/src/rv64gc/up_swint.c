@@ -130,7 +130,7 @@ static void dispatch_syscall(void)
 
 int up_swint(int irq, FAR void *context, FAR void *arg)
 {
-  uarths_puts("up swint\r\n");
+  //:uarths_puts("up swint\r\n");
   uint64_t *regs = (uint64_t *)context;
 
   DEBUGASSERT(regs && regs == g_current_regs);
@@ -147,7 +147,7 @@ int up_swint(int irq, FAR void *context, FAR void *arg)
 
   /* Handle the SWInt according to the command in $a0 */
 
-  uarths_puts("switch\r\n");
+  //uarths_puts("switch\r\n");
   switch (regs[REG_A0])
     {
       /* A0=SYS_restore_context: This a restore context command:

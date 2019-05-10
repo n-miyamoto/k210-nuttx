@@ -186,6 +186,8 @@ typedef enum _uarths_stopbit
 
 extern volatile uarths_t *const uarths;
 
+uint32_t uarths_rxempty(void);
+uint32_t uarths_txfull(void);
 /**
  * @brief       Initialization Core UART
  *

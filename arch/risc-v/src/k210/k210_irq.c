@@ -128,7 +128,6 @@ int k210_trap_handler(int irq, void *context, FAR void *arg)
 
   sp = g_current_regs[2];
   __asm__ volatile ("addi x2, %0, 0" ::"r"(sp));
-
   __asm__ volatile ("ebreak");
 #endif
   return 0;
@@ -138,11 +137,11 @@ int k210_trap_handler(int irq, void *context, FAR void *arg)
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
-void K210_swint_callback(void){
-  uarths_puts("K210 callback\r\n");
-  while(1);
-  irq_dispatch(K210_IRQ_SOFTWARE, NULL);
-}
+//void K210_swint_callback(void){
+//  //uarths_puts("K210 callback\r\n");
+//  while(1);
+//  irq_dispatch(K210_IRQ_SOFTWARE, NULL);
+//}
 
 /****************************************************************************
  * Name: up_irqinitialize
@@ -257,8 +256,8 @@ static inline uint32_t _current_privilege(void)
 
 void up_disable_irq(int irq)
 {
-  uarths_puts(__func__);
-  up_setirqmaskbit(1 << irq);
+  //uarths_puts(__func__);
+  //up_setirqmaskbit(1 << irq);
 }
 
 /****************************************************************************
@@ -344,7 +343,6 @@ int up_prioritize_irq(int irq, int priority)
 
 irqstate_t up_irq_save(void)
 {
-  uarths_puts(__func__);
   uint32_t oldstat, newstat;
   if (_current_privilege())
     {
