@@ -170,19 +170,25 @@ handle_ecall_m(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fre
     char str[256];
     //sprintf(str, "\r\nfin %x %x %d %x %x %d\r\n", epc, ptr ,ptr[10], ptr[11] ,ptr[12], sizeof(uintptr_t));
     g_current_regs = (uint64_t*)regs;
-    sprintf(str, "\r\nfin %x %x %x %x %x %p %p\r\n", epc, ptr, (uintptr_t)ptr[2], ptr[11] ,ptr[12], &g_current_regs, g_current_regs);
+    sprintf(str, "finA %x %x %x %x %x %p %p\r\n", epc, ptr, (uintptr_t)ptr[2], ptr[3] ,ptr[12], &g_current_regs, g_current_regs);
     uarths_puts(str);
+    //ptr[2]=(uintptr_t)ptr[2] - 0x200;
     //g_current_regs = regs;
     //uarths_puts("syscall \r\n");
-    irq_dispatch(K210_IRQ_SOFTWARE, regs);
+    //irq_dispatch(K210_IRQ_SOFTWARE, regs);
+    ptr[0] = epc+4;
+    ptr[2] = ptr[2] + 0x200 ;
+    irq_dispatch(K210_IRQ_SOFTWARE, ptr);
     //ptr[2] -=4;
-    sprintf(str, "\r\nfin %x %x %x %x %x %p %p\r\n", epc, ptr, (uintptr_t)ptr[2], ptr[11] ,ptr[12], &g_current_regs, g_current_regs);
-    uarths_puts(str);
     void* tmp = g_current_regs;
+    sprintf(str, "finB %x %x %x %x %x %p %p %p\r\n", epc, ptr, (uintptr_t)ptr[2], ptr[3] ,ptr[12], &g_current_regs, g_current_regs, ((uint64_t*)tmp)[0]);
     epc = ((uint64_t*)tmp)[0];
     
     g_current_regs = NULL;
     //sprintf(str, "\r\nfin %x %x %x %x %x %p %p\r\n", epc, ptr, (uintptr_t)ptr[0], ptr[11] ,ptr[12], &g_current_regs, g_current_regs);
+    //:uarths_puts(str);
+    //sprintf(str, "finC %x %p %x %x \r\n", epc, (uintptr_t)ptr[2], ptr[12], ((uint64_t*)tmp)[0]);
+    //sprintf(str, "finC %x %x %x %x %x %p %p\r\n", epc, ptr, (uintptr_t)ptr[2], ptr[11] ,ptr[12], &g_current_regs, g_current_regs);
     //uarths_puts(str);
     //uarths_puts("finish dispatch\r\n");
     //epc = (uintptr_t)ptr[0];
@@ -194,6 +200,7 @@ handle_ecall_m(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fre
     //ptr2 = g_current_regs;
     //epc = ((uint64_t*)g_current_regs)[0];
     //return ptr2[0];
+    uarths_puts(str);
     return epc;
 }
 uintptr_t __attribute__((weak))
@@ -393,16 +400,11 @@ handle_fault_store(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t
     return epc;
 }
 
-static void set_reg_null(void){
-    //g_current_regs =NULL;
-}
-
 uintptr_t handle_syscall(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fregs[32])
 {
-    uarths_puts(__func__);
+    //uarths_puts(__func__);
     char str[256];
-    sprintf(str, "%x\r\n", cause/*, epc, regs[0]*/);
-    //if(cause == 0x0b) uarths_puts(str);
+    sprintf(str, ">sc :%x\r\n", cause/*, epc, regs[0]*/);
     uarths_puts(str);
     static uintptr_t (* const cause_table[])(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fregs[32]) =
     {
@@ -419,10 +421,7 @@ uintptr_t handle_syscall(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uin
         [CAUSE_HYPERVISOR_ECALL]      = handle_ecall_s,
         [CAUSE_MACHINE_ECALL]         = handle_ecall_m,
     };
-    //uintptr_t tmp =  cause_table[cause](cause, epc, regs, fregs);
     return cause_table[cause](cause, epc, regs, fregs);
-    //uarths_puts("before return \r\n");
-    //return tmp;
 }
 
 size_t get_free_heap_size(void)

@@ -227,7 +227,7 @@ trap_entry:
   csrs mstatus, t0
   LREG x1, 1*REGBYTES(sp)
   //LREG x2, 2*REGBYTES(sp)
-  LREG x3, 3*REGBYTES(sp)
+  //LREG x3, 3*REGBYTES(sp)
   LREG x4, 4*REGBYTES(sp)
   LREG x5, 5*REGBYTES(sp)
   LREG x6, 6*REGBYTES(sp)
