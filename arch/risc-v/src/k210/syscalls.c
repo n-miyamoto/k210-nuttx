@@ -169,8 +169,8 @@ handle_ecall_m(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fre
     char str[256];
     //sprintf(str, "\r\nfin %x %x %d %x %x %d\r\n", epc, ptr ,ptr[10], ptr[11] ,ptr[12], sizeof(uintptr_t));
     g_current_regs = (uint64_t*)regs;
-    sprintf(str, "finA %x %x %x %x %x %p %p\r\n", epc, ptr, (uintptr_t)ptr[2], ptr[3] ,ptr[12], &g_current_regs, g_current_regs);
-    uarths_puts(str);
+    //sprintf(str, "finA %x %x %x %x %x %p %p\r\n", epc, ptr, (uintptr_t)ptr[2], ptr[3] ,ptr[12], &g_current_regs, g_current_regs);
+    //uarths_puts(str);
     //ptr[2]=(uintptr_t)ptr[2] - 0x200;
     //g_current_regs = regs;
     //uarths_puts("syscall \r\n");
@@ -180,7 +180,7 @@ handle_ecall_m(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fre
     irq_dispatch(K210_IRQ_SOFTWARE, ptr);
     //ptr[2] -=4;
     void* tmp = g_current_regs;
-    sprintf(str, "finB %x %x %x %x %x %p %p %p\r\n", epc, ptr, (uintptr_t)ptr[2], ptr[3] ,ptr[12], &g_current_regs, g_current_regs, ((uint64_t*)tmp)[0]);
+    //sprintf(str, "finB %x %x %x %x %x %p %p %p\r\n", epc, ptr, (uintptr_t)ptr[2], ptr[3] ,ptr[12], &g_current_regs, g_current_regs, ((uint64_t*)tmp)[0]);
     epc = ((uint64_t*)tmp)[0];
     
     g_current_regs = NULL;
@@ -199,7 +199,7 @@ handle_ecall_m(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fre
     //ptr2 = g_current_regs;
     //epc = ((uint64_t*)g_current_regs)[0];
     //return ptr2[0];
-    uarths_puts(str);
+    //uarths_puts(str);
     return epc;
 }
 uintptr_t __attribute__((weak))
@@ -402,9 +402,9 @@ handle_fault_store(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t
 uintptr_t handle_syscall(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fregs[32])
 {
     //uarths_puts(__func__);
-    char str[256];
-    sprintf(str, ">sc :%x\r\n", cause/*, epc, regs[0]*/);
-    uarths_puts(str);
+    //char str[256];
+    //sprintf(str, ">sc :%x\r\n", cause/*, epc, regs[0]*/);
+    //uarths_puts(str);
     static uintptr_t (* const cause_table[])(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fregs[32]) =
     {
         [CAUSE_MISALIGNED_FETCH]      = handle_misaligned_fetch,

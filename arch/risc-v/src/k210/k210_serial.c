@@ -345,6 +345,10 @@ static void up_shutdown(struct uart_dev_s *dev)
 }
 
 void uart_callback(void){
+    //uarths_puts("i");
+    //int a = uarths_getc();
+    //if(a!=-1)
+     //   uarths_putchar(a);
   irq_dispatch(K210_IRQ_UART1_RX , NULL);
 }
 /****************************************************************************
@@ -371,7 +375,7 @@ static int up_attach(struct uart_dev_s *dev)
   //up_serialout(priv, K210_UART_CTRL_REG_OFFSET, IE_RX | IE_TX);
 
   uarths_init();
-  uarths_set_irq(UARTHS_SEND_RECEIVE, uart_callback, NULL, 2);
+  uarths_set_irq(UARTHS_RECEIVE, uart_callback, NULL, 2);
   irq_attach(priv->irqrx, up_interrupt, dev);
   irq_attach(priv->irqtx, up_interrupt, dev);
 
@@ -403,7 +407,7 @@ static void up_detach(struct uart_dev_s *dev)
 
   /* Disable interrupt generation on the peripheral */
 
-  up_serialout(priv, K210_UART_CTRL_REG_OFFSET, 0);
+  //up_serialout(priv, K210_UART_CTRL_REG_OFFSET, 0);
 
   /* Detach from the interrupt */
 
@@ -590,7 +594,9 @@ static int up_receive(struct uart_dev_s *dev, uint32_t *status)
   /* Then return the actual received byte */
 
   //return  (int)(up_serialin(priv, K210_UART_RX_REG_OFFSET));
-  return uarths_getc();
+  int ret = uarths_getc();
+  //uarths_putchar("*");
+  return ret ;
 }
 
 /****************************************************************************
@@ -647,6 +653,7 @@ static bool up_rxavailable(struct uart_dev_s *dev)
 
   //return (up_serialin(priv, K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_RX_AVAIL) != 0;
   return !uarths_rxempty();
+  //return true; 
 }
 
 /****************************************************************************
@@ -722,7 +729,7 @@ static bool up_txready(struct uart_dev_s *dev)
 
   //return !uarths_txfull();
   /* Return TRUE if the Transmit buffer register is not full */
-  //return uarths_txfull();
+  //return !uarths_txfull();
   return true;
   //return (up_serialin(priv, K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_TX_EMPTY) != 0;
 }
