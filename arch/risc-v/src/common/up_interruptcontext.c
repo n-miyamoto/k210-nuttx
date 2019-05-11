@@ -68,16 +68,6 @@ volatile uintptr_t* g_current_regs;
 
 bool up_interrupt_context(void)
 {
-  //uarths_puts(__func__);
-  //uarths_puts("\r\n");
-  //char s[256]="";
-  //sprintf(s, "int %p\r\n",   g_current_regs);
-  //uarths_puts(s);
-  //if(g_current_regs==NULL) uarths_puts("false!!!");
-  //g_current_regs = NULL;
   bool ret = g_current_regs != NULL;
-  //sprintf(s, "int %x \r\n", ret);
-  //uarths_puts(s);
   return ret;
-//  return g_current_regs != NULL;
 }

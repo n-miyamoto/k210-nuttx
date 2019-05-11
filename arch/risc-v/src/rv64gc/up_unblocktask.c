@@ -73,11 +73,7 @@
 
 void up_unblock_task(struct tcb_s *tcb)
 {
-  //char s[256];
-  //uarths_puts(__func__);
   struct tcb_s *rtcb = this_task();
-  //sprintf(s, "nem of tasks %s, %s \r\n", tcb->name, rtcb->name);
-  //uarths_puts(s);
 
   /* Verify that the context switch can be performed */
 
@@ -153,10 +149,6 @@ void up_unblock_task(struct tcb_s *tcb)
           sched_resume_scheduler(nexttcb);
 
           /* Then switch contexts */
-          //char tmpstr[256];
-          //char str[256];
-          //sprintf(str, "entry pointer %x %x \r\n", (uintptr_t)nexttcb->start , (uintptr_t)nexttcb->entry.main);
-          //uarths_puts(str);
           up_switchcontext(rtcb->xcp.regs, nexttcb->xcp.regs);
 
           /* up_switchcontext forces a context switch to the task at the

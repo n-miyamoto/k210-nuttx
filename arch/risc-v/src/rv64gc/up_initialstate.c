@@ -69,7 +69,6 @@
 
 void up_initial_state(struct tcb_s *tcb)
 {
-  uarths_puts(__func__);
   struct xcptcontext *xcp = &tcb->xcp;
   uint64_t regval;
 
@@ -116,8 +115,7 @@ void up_initial_state(struct tcb_s *tcb)
    *
    */
 
-  regval = up_get_newintctx();
-  xcp->regs[REG_INT_CTX] = regval;
-  uarths_puts(__func__);
+//  regval = up_get_newintctx(); // TODO fix
+//  xcp->regs[REG_INT_CTX] = regval;
 }
 

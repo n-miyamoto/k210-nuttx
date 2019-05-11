@@ -31,7 +31,6 @@
 
 #include <sys/stat.h>
 #include <sys/time.h>
-//#include <sys/unistd.h>
 #include <machine/syscall.h>
 #include <stdbool.h>
 #include <errno.h>
@@ -42,15 +41,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "syscalls.h"
-//#include "atomic.h"
 #include "clint.h"
-//#include "fpioa.h"
 #include "interrupt.h"
 #include "sysctl.h"
-//#include "uarths.h"
-//#include "util.h"
 #include "syslog.h"
-//#include "dump.h"
 #include "encoding.h"
 #include "up_internal.h"
 
@@ -401,10 +395,6 @@ handle_fault_store(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t
 
 uintptr_t handle_syscall(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fregs[32])
 {
-    //uarths_puts(__func__);
-    //char str[256];
-    //sprintf(str, ">sc :%x\r\n", cause/*, epc, regs[0]*/);
-    //uarths_puts(str);
     static uintptr_t (* const cause_table[])(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fregs[32]) =
     {
         [CAUSE_MISALIGNED_FETCH]      = handle_misaligned_fetch,

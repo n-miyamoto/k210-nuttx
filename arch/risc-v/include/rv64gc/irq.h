@@ -127,14 +127,14 @@
 
 /* Interrupt Context register */
 
-#define REG_INT_CTX_NDX     32
+//#define REG_INT_CTX_NDX     32
 
 #ifdef CONFIG_ARCH_CHIP_GAP8
 /* 31 registers, ePC, plus 6 loop registers */
 
 #  define XCPTCONTEXT_REGS  (32 + 6)
 #else
-#  define XCPTCONTEXT_REGS  33
+#  define XCPTCONTEXT_REGS  32
 #endif
 
 #define XCPTCONTEXT_SIZE    (8 * XCPTCONTEXT_REGS)
@@ -177,7 +177,7 @@
 #  define REG_X29           (8*REG_X29_NDX)
 #  define REG_X30           (8*REG_X30_NDX)
 #  define REG_X31           (8*REG_X31_NDX)
-#  define REG_INT_CTX       (8*REG_INT_CTX_NDX)
+//#  define REG_INT_CTX       (8*REG_INT_CTX_NDX)
 #else
 #  define REG_EPC           REG_EPC_NDX
 #  define REG_X1            REG_X1_NDX
@@ -211,7 +211,7 @@
 #  define REG_X29           REG_X29_NDX
 #  define REG_X30           REG_X30_NDX
 #  define REG_X31           REG_X31_NDX
-#  define REG_INT_CTX       REG_INT_CTX_NDX
+//#  define REG_INT_CTX       REG_INT_CTX_NDX
 #endif
 
 /* Now define more user friendly alternative name that can be used either

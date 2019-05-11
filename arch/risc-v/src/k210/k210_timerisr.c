@@ -95,7 +95,7 @@ static uint64_t g_systick = 0;
  ****************************************************************************/
 
 /****************************************************************************
- * Function:  nr5m100_timerisr
+ * Function:  k210_systick
  *
  * Description:
  *   The timer ISR will perform a variety of services for various portions
@@ -106,8 +106,6 @@ static uint64_t g_systick = 0;
 static int k210_systick(int irq, void *context, FAR void *arg)
 {
   /* Process timer interrupt */
-
-  //uarths_puts("tick!\r\n");
   nxsched_process_timer();
   return 0;
 }
@@ -117,18 +115,16 @@ static int k210_systick(int irq, void *context, FAR void *arg)
  ****************************************************************************/
 
 /****************************************************************************
- * Function:  up_get_systick
+ * Function:  K210_timer_int
  *
  * Description:
- *   Returns the current value of systick.
+ *   Callnack function for riscV sys tick timer
  *
  ****************************************************************************/
 
-//uint64_t up_get_systick(void)
-//{
-//  uarths_puts("tick\r\n");
-//  return g_systick;
-//}
+void K210_timer_int(void){
+  irq_dispatch(K210_IRQ_SYSTICK, NULL);
+}
 
 /****************************************************************************
  * Function:  riscv_timer_initialize
@@ -138,35 +134,12 @@ static int k210_systick(int irq, void *context, FAR void *arg)
  *   the timer interrupt.
  *
  ****************************************************************************/
-void K210_timer_int(void){
-  irq_dispatch(K210_IRQ_SYSTICK, NULL);
-}
 
 void riscv_timer_initialize(void)
 {
-#if 0
-  /* Set the SysTick interrupt to the default priority */
-
-  up_clearpri1bit(K210_IRQ_SYSTICK);
-  up_clearpri2bit(K210_IRQ_SYSTICK);
-  up_clearpri3bit(K210_IRQ_SYSTICK);
-
-  /* Attach the timer interrupt vector */
-
-  (void)irq_attach(K210_IRQ_SYSTICK, k210_timerisr, NULL);
-
-  /* Configure and enable SysTick to interrupt at the requested rate */
-
-  up_setsystick(0x80000000 | SYSTICK_RELOAD);
-
-  /* And enable the timer interrupt */
-
-  up_enable_irq(K210_IRQ_SYSTICK);
-#else 
   clint_timer_init();
   clint_timer_register(K210_timer_int,NULL);
   irq_attach(K210_IRQ_SYSTICK, k210_systick, NULL);
   up_enable_irq(K210_IRQ_SYSTICK);
-#endif
 }
 

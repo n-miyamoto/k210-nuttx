@@ -167,7 +167,6 @@ int up_swint(int irq, FAR void *context, FAR void *arg)
 
       case SYS_restore_context:
         {
-          uarths_puts("restore context:\r\n");
           DEBUGASSERT(regs[REG_A1] != 0);
           g_current_regs = (uint64_t *)regs[REG_A1];
         }
@@ -197,9 +196,7 @@ int up_swint(int irq, FAR void *context, FAR void *arg)
           up_copystate((uint64_t*)regs, (uint64_t*)regs[REG_A2]);
         }
         break;
-      case 3:
-          uarths_puts("dummy\r\n");
-        break;
+
 
       /* A0=SYS_syscall_return: This a switch context command:
        *
