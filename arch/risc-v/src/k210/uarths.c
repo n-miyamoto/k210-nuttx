@@ -85,7 +85,7 @@ void uarths_set_irq(uarths_interrupt_mode_t interrupt_mode, plic_irq_callback_t 
             break;
     }
     g_uarths_context.uarths_interrupt_mode = interrupt_mode;
-
+    plic_init();
     plic_set_priority(IRQN_UARTHS_INTERRUPT, priority);
     plic_irq_register(IRQN_UARTHS_INTERRUPT, uarths_irq_callback, &g_uarths_context);
     plic_irq_enable(IRQN_UARTHS_INTERRUPT);

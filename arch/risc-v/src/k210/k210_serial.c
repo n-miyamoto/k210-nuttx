@@ -345,7 +345,6 @@ static void up_shutdown(struct uart_dev_s *dev)
 }
 
 void uart_callback(void){
-  uarths_puts(__func__);
   irq_dispatch(K210_IRQ_UART1_RX , NULL);
 }
 /****************************************************************************
@@ -372,7 +371,7 @@ static int up_attach(struct uart_dev_s *dev)
   //up_serialout(priv, K210_UART_CTRL_REG_OFFSET, IE_RX | IE_TX);
 
   uarths_init();
-  uarths_set_irq(UARTHS_SEND_RECEIVE, uart_callback, NULL, 1023);
+  uarths_set_irq(UARTHS_SEND_RECEIVE, uart_callback, NULL, 2);
   irq_attach(priv->irqrx, up_interrupt, dev);
   irq_attach(priv->irqtx, up_interrupt, dev);
 
@@ -426,7 +425,6 @@ static void up_detach(struct uart_dev_s *dev)
 
 static int up_interrupt(int irq, void *context, FAR void *arg)
 {
-  uarths_puts(__func__);
   struct uart_dev_s *dev = (struct uart_dev_s *)arg;
   struct up_dev_s   *priv;
   int                passes;
@@ -445,14 +443,14 @@ static int up_interrupt(int irq, void *context, FAR void *arg)
     {
       handled = false;
 
-      status = up_serialin(priv, K210_UART_STATUS_REG_OFFSET);
+      //status = up_serialin(priv, K210_UART_STATUS_REG_OFFSET);
 
       /* Handle incoming, received bytes.  The RX FIFO is configured to
        * interrupt when the RX FIFO is 75% full (that is 6 of 8 for 8-deep
        * FIFOs or 3 of 4 for 4-deep FIFOS.
        */
 
-      if (status & K210_UART_RX_IRQ_PENDING)
+      //if (status & K210_UART_RX_IRQ_PENDING)
         {
           /* Process incoming bytes */
 
@@ -475,7 +473,7 @@ static int up_interrupt(int irq, void *context, FAR void *arg)
        * full condition.
        */
 
-      if (status & K210_UART_TX_IRQ_PENDING)
+      //:if (status & K210_UART_TX_IRQ_PENDING)
         {
           /* Process outgoing bytes */
 
@@ -579,19 +577,20 @@ static int up_ioctl(struct file *filep, int cmd, unsigned long arg)
 
 static int up_receive(struct uart_dev_s *dev, uint32_t *status)
 {
-  uarths_puts(__func__);
+  //uarths_puts(__func__);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
 
   /* Return status information */
 
-  if (status)
-    {
-      *status = 0; /* We are not yet tracking serial errors */
-    }
+  //if (status)
+  //  {
+  //    *status = 0; /* We are not yet tracking serial errors */
+  //  }
 
   /* Then return the actual received byte */
 
-  return  (int)(up_serialin(priv, K210_UART_RX_REG_OFFSET));
+  //return  (int)(up_serialin(priv, K210_UART_RX_REG_OFFSET));
+  return uarths_getc();
 }
 
 /****************************************************************************
@@ -604,7 +603,6 @@ static int up_receive(struct uart_dev_s *dev, uint32_t *status)
 
 static void up_rxint(struct uart_dev_s *dev, bool enable)
 {
-  uarths_puts(__func__);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
   irqstate_t flags;
   uint8_t im;
@@ -629,8 +627,8 @@ static void up_rxint(struct uart_dev_s *dev, bool enable)
     }
   priv->im = im;
   leave_critical_section(flags);
-  uarths_puts(__func__);
-  uarths_puts("\r\n");
+  //uarths_puts(__func__);
+  //:uarths_puts("\r\n");
 }
 
 /****************************************************************************
@@ -643,7 +641,6 @@ static void up_rxint(struct uart_dev_s *dev, bool enable)
 
 static bool up_rxavailable(struct uart_dev_s *dev)
 {
-  uarths_puts(__func__);
   //struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
 
   /* Return true is data is available in the receive data buffer */
@@ -721,10 +718,11 @@ static void up_txint(struct uart_dev_s *dev, bool enable)
 static bool up_txready(struct uart_dev_s *dev)
 {
   //uarths_puts(__func__);
-  struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
+  //:struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
 
   //return !uarths_txfull();
   /* Return TRUE if the Transmit buffer register is not full */
+  //return uarths_txfull();
   return true;
   //return (up_serialin(priv, K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_TX_EMPTY) != 0;
 }
@@ -744,7 +742,8 @@ static bool up_txempty(struct uart_dev_s *dev)
 
   /* Return TRUE if the Transmit shift register is empty */
 
-  return (up_serialin(priv, K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_TX_EMPTY) != 0;
+  return !uarths_txfull();
+  //return (up_serialin(priv, K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_TX_EMPTY) != 0;
 }
 
 /****************************************************************************
