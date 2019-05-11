@@ -209,7 +209,7 @@ static char g_uart1txbuffer[CONFIG_UART1_TXBUFSIZE];
 
 static struct up_dev_s g_uart1priv =
 {
-  .uartbase  = K210_UART1_BASE,
+ // .uartbase  = K210_UART1_BASE,
   .baud      = CONFIG_UART1_BAUD,
   .irqrx     = K210_IRQ_UART1_RX,
   .irqtx     = K210_IRQ_UART1_TX,
@@ -244,19 +244,19 @@ static uart_dev_t g_uart1port =
  * Name: up_serialin
  ****************************************************************************/
 
-static inline uint32_t up_serialin(struct up_dev_s *priv, int offset)
-{
-  return getreg32(priv->uartbase + offset);
-}
+//static inline uint32_t up_serialin(struct up_dev_s *priv, int offset)
+//{
+//  return getreg32(priv->uartbase + offset);
+//}
 
 /****************************************************************************
  * Name: up_serialout
  ****************************************************************************/
 
-static inline void up_serialout(struct up_dev_s *priv, int offset, uint32_t value)
-{
-  putreg32(value, priv->uartbase + offset);
-}
+//:wstatic inline void up_serialout(struct up_dev_s *priv, int offset, uint32_t value)
+//:w{
+//:w  putreg32(value, priv->uartbase + offset);
+//:w}
 
 /****************************************************************************
  * Name: up_restoreuartint

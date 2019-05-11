@@ -37,8 +37,5 @@
 void up_puts(const char *p)
 {
    uarths_puts(p);
-//	while (*p != 0)
-//      up_lowputc(*(p++));
-//   up_lowputc('\n');
 }
 

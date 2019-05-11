@@ -45,7 +45,7 @@
 #include <nuttx/config.h>
 
 #include "chip.h"
-#include "chip/k210_timer.h"
+//#include "chip/k210_timer.h"
 
 /************************************************************************************
  * Pre-processor Definitions

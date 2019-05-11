@@ -53,8 +53,6 @@
 
 /* Include the chip memory map. */
 
-#include "k210_memorymap.h"
-
 /* Include our custom access routines for ISR masking, priority */
 
 #include "k210_csr.h"

@@ -19,9 +19,6 @@
 #include <stdlib.h>
 #include "interrupt.h"
 #include "encoding.h"
-//#include "dump.h"
-//#include "syscalls.h"
-//#include "syslog.h"
 
 uintptr_t __attribute__((weak))
 handle_irq_dummy(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fregs[32])

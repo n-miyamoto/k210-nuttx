@@ -58,7 +58,6 @@
  * Public Data
  ****************************************************************************/
 
-//volatile uint32_t *g_current_regs;
 volatile uintptr_t *g_current_regs;
 /****************************************************************************
  * Private Data
@@ -69,79 +68,8 @@ volatile uintptr_t *g_current_regs;
  ****************************************************************************/
 
 /****************************************************************************
- * Name: epic_dump
- *
- * Description:
- *   Dump the EPIC priority register settings
- *
- ****************************************************************************/
-#if 0
-void epic_dump(void)
-{
-   uint64_t reg;
-   char     str[40];
-
-   __asm__ volatile("csrr %0, 0x7e0" : "=r"(reg));
-   sprintf(str, "IRQMASK  = 0x%08X\r", (int) reg);
-   up_puts(str);
-   __asm__ volatile("csrr %0, 0x7e4" : "=r"(reg));
-   sprintf(str, "IRQSTACK = 0x%08X\r", (int) reg);
-   up_puts(str);
-   __asm__ volatile("csrr %0, 0x7e1" : "=r"(reg));
-   sprintf(str, "PRI1     = 0x%08X\r", (int) reg);
-   up_puts(str);
-   __asm__ volatile("csrr %0, 0x7e2" : "=r"(reg));
-   sprintf(str, "PRI2     = 0x%08X\r", (int) reg);
-   up_puts(str);
-   __asm__ volatile("csrr %0, 0x7e3" : "=r"(reg));
-   sprintf(str, "PRI3     = 0x%08X\r", (int) reg);
-   up_puts(str);
-   __asm__ volatile("csrr %0, 0x7e5" : "=r"(reg));
-   sprintf(str, "SYSTICK  = 0x%08X\r", (int) reg);
-   up_puts(str);
-}
-#endif
-/****************************************************************************
- * Name: nr5_trap
- *
- * Description:
- *   Handler for execptions.  None are handled and all are fatal
- *   error conditions.  The only advantage these provided over the default
- *   unexpected interrupt handler is that they provide a diagnostic output.
- *
- ****************************************************************************/
-
-#define CONFIG_DEBUG
-
-int k210_trap_handler(int irq, void *context, FAR void *arg)
-{
-  uint64_t  sp;
-
-  /* Print a PANIC message */
-
-  up_puts("PANIC!!! TRAP received\r\n");
-  uarths_puts("PANIC!!! TRAP received\r\n");
-
-#ifdef CONFIG_DEBUG
-
-  /* restore the SP to that of the bad code */
-
-  sp = g_current_regs[2];
-  __asm__ volatile ("addi x2, %0, 0" ::"r"(sp));
-  __asm__ volatile ("ebreak");
-#endif
-  return 0;
-}
-
-
-/****************************************************************************
  * Public Functions
  ****************************************************************************/
-//void K210_swint_callback(void){
-//  //uarths_puts("K210 callback\r\n");
-//  while(1);
-//  irq_dispatch(K210_IRQ_SOFTWARE, NULL);
-//}
 
 /****************************************************************************
  * Name: up_irqinitialize
@@ -149,84 +77,8 @@ int k210_trap_handler(int irq, void *context, FAR void *arg)
 
 void up_irqinitialize(void)
 {
-#if 0
-  uint32_t  mask;
-
-  /* Disable all interrupts */
-
-  uarths_puts("irq disable\r\n");
-  mask = ~0;
-  //__asm__ volatile("csrw %0, %1" :: "i"(CSR_MIE), "r"(mask));
-  /* Disable global interrupt */
-  clear_csr(mstatus, MSTATUS_MIE);
-
-  /* Colorize the interrupt stack for debug purposes */
-
-#if defined(CONFIG_STACK_COLORATION) && CONFIG_ARCH_INTERRUPTSTACK > 3
-  {
-    size_t intstack_size = (CONFIG_ARCH_INTERRUPTSTACK & ~3);
-    up_stack_color((FAR void *)((uintptr_t)&g_intstackbase - intstack_size),
-                   intstack_size);
-  }
-#endif
-
-  /* Set the location of the vector table */
-
-  /* Set all interrupts (and exceptions) to the default priority */
-
-#ifdef K210_EPIC_PRI_REG
-  __asm__ volatile (" \
-        csrw %0, 0(zero) \
-        csrw %1, 0(zero) \
-        csrw %2, 0(zero) " ::
-        "i"(NR5_EPIC_PRI1_REG), "i"(NR5_EPIC_PRI2_REG),
-        "i"(NR5_EPIC_PRI3_REG) );
-#endif
-
-  /* Initialize the IRQ stack to Pri level 5 with interrupts disabled */
-
-  mask = 0x05 << 2;
-  uarths_puts("irq disable\r\n");
-  __asm__ volatile("csrw %0, %1" :: "i"(CSR_MIE), "r"(mask));
-
-  /* currents_regs is non-NULL only while processing an interrupt */
-
-  g_current_regs = NULL;
-
-  /* Attach the Trap exception handler.  */
-
-  uarths_puts("irq attach\r\n");
-  irq_attach(K210_IRQ_TRAP, k210_trap_handler, NULL);
-
-  uarths_puts("attach 2\r\n");
-  /* Attach software interrupt handler */
-
-  irq_attach(K210_IRQ_SOFTWARE, up_swint, NULL);
-  uarths_puts("enable\r\n");
-  up_enable_irq(K210_IRQ_SOFTWARE);
-  uarths_puts("irq attach\r\n");
-
-  /* Set the software interrupt priority higher */
-
-  up_setpri2bit(1 << K210_IRQ_SOFTWARE);
-  uarths_puts("set pri\r\n");
-
-#ifndef CONFIG_SUPPRESS_INTERRUPTS
-
-  /* And finally, enable interrupts */
-
-  up_enable_irq(K210_IRQ_TRAP);
-  uarths_puts("enable irq\r\n");
-
-#endif
-
-  /* Now enable Global Interrupts */
-
-  __asm__ volatile("csrrs a0, %0, 3" :: "i"(CSR_MIE));
-#else 
   irq_attach(K210_IRQ_SOFTWARE, up_swint, NULL);
   up_enable_irq(K210_IRQ_SOFTWARE);
-#endif
 }
 
 /****************************************************************************
@@ -256,8 +108,7 @@ static inline uint32_t _current_privilege(void)
 
 void up_disable_irq(int irq)
 {
-  //uarths_puts(__func__);
-  //up_setirqmaskbit(1 << irq);
+  //TODO
 }
 
 /****************************************************************************
@@ -279,7 +130,6 @@ void up_enable_irq(int irq)
     default:
       break;
   }
-  //up_clearirqmaskbit(1 << irq);
 }
 
 /****************************************************************************
@@ -305,14 +155,8 @@ void up_ack_irq(int irq)
 
 uint64_t up_get_newintctx(void)
 {
-  uarths_puts(__func__);
-  int64_t   regval;
-
-  /* Set priority level 5, enabled upon return from interrupt */
-
-  regval = ((5 << 2) | 2) << 4;
-
-  return regval;
+  return 0;
+  //TODO remote this function
 }
 
 /****************************************************************************

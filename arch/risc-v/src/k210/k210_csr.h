@@ -47,7 +47,7 @@
 #endif
 
 #if defined(CONFIG_K210)
-#  include "chip/k210_epic.h"
+//#  include "chip/k210_epic.h"
 #endif
 
 #include <arch/rv64gc/csr.h>

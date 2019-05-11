@@ -134,14 +134,9 @@ void up_lowputc(char ch)
 #ifdef HAVE_SERIAL_CONSOLE
   /* Wait until the TX data register is empty */
 
-  //while ((getreg32(K210_CONSOLE_BASE + K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_TX_EMPTY) == 0)
-  //  ;
-
   /* Then send the character */
-
-  //putreg32((uint32_t)ch, K210_CONSOLE_BASE + K210_UART_TX_REG_OFFSET);
-
   uarths_putchar(ch);
+
 #endif /* HAVE_CONSOLE */
 }
 
@@ -167,11 +162,9 @@ void k210_lowsetup(void)
 
   /* Configure the UART Baud Rate */
 
-  //putreg32(K210_UARTDIV, K210_CONSOLE_BASE + K210_UART_BAUD_RATE_OFFSET);
 
   /* Configure the RX interrupt */
 
-  putreg32(K210_UART_CTRL_ENABLE_RX_IRQ, K210_CONSOLE_BASE + K210_UART_CTRL_REG_OFFSET);
 
 #endif /* HAVE_SERIAL_CONSOLE && !CONFIG_SUPPRESS_UART_CONFIG */
 #endif /* HAVE_UART */

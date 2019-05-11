@@ -53,7 +53,7 @@
  *
  * Performs low level board initializaiton tasks.
  ************************************************************************************/
-
+#if 0
 void __k210_init(void)
 {
   /* Configure the UART so we can get debug output */
@@ -73,3 +73,4 @@ void __k210_init(void)
 }
 
 
+#endif

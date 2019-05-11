@@ -35,7 +35,7 @@
  */
 
 //#define ENABLE_QREGS
-#include "k210_custom_ops.h"
+//#include "k210_custom_ops.h"
 #include "k210_csr.h"
 
 	.global up_getmisa
