@@ -157,10 +157,10 @@ void up_schedule_sigaction(struct tcb_s *tcb, sig_deliver_t sigdeliver)
                */
 
               g_current_regs[REG_EPC]     = (uint32_t)up_sigdeliver;
-              int_ctx                     = g_current_regs[REG_INT_CTX];
+              //int_ctx                     = g_current_regs[REG_INT_CTX];
               int_ctx                     &= ~EPIC_STATUS_INT_PRI_MASK;
               int_ctx                     |= EPIC_STATUS_INT_PRI1;
-              g_current_regs[REG_INT_CTX] = int_ctx;
+              //:wg_current_regs[REG_INT_CTX] = int_ctx;
 
               /* And make sure that the saved context in the TCB
                * is the same as the interrupt return context.
@@ -189,17 +189,17 @@ void up_schedule_sigaction(struct tcb_s *tcb, sig_deliver_t sigdeliver)
 
           tcb->xcp.sigdeliver       = sigdeliver;
           tcb->xcp.saved_epc        = tcb->xcp.regs[REG_EPC];
-          tcb->xcp.saved_int_ctx    = tcb->xcp.regs[REG_INT_CTX];
+          //tcb->xcp.saved_int_ctx    = tcb->xcp.regs[REG_INT_CTX];
 
           /* Then set up to vector to the trampoline with interrupts
            * disabled
            */
 
           tcb->xcp.regs[REG_EPC]      = (uint32_t)up_sigdeliver;
-          int_ctx                     = tcb->xcp.regs[REG_INT_CTX];
+          //int_ctx                     = tcb->xcp.regs[REG_INT_CTX];
           int_ctx                     &= ~EPIC_STATUS_INT_PRI_MASK;
           int_ctx                     |= EPIC_STATUS_INT_PRI1;
-          tcb->xcp.regs[REG_INT_CTX]  = int_ctx;
+          //tcb->xcp.regs[REG_INT_CTX]  = int_ctx;
 
           sinfo("PC/STATUS Saved: %08x/%08x New: %08x/%08x\n",
                 tcb->xcp.saved_epc, tcb->xcp.saved_status,
