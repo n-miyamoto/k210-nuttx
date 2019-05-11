@@ -14,15 +14,10 @@
  */
 
 #include <stdlib.h>
-//#include "atomic.h"
-//#include "clint.h"
-//#include "dmac.h"
 #include "entry.h"
 #include "fpioa.h"
 #include "platform.h"
-//#include "plic.h"
-//#include "sysctl.h"
-//#include "syslog.h"
+#include "sysctl.h"
 #include "uarths.h"
 #include "k210.h"
 
@@ -33,94 +28,44 @@ core_instance_t core1_instance;
 
 volatile char * const ram = (volatile char*)RAM_BASE_ADDR;
 
-//extern char _ebss[];
 extern char _tdata[];
 extern char _tbss[];
 extern char _heap_start[];
 extern char _heap_end[];
 
-//void thread_entry(int core_id)
-//{
-//    while (!atomic_read(&g_wake_up[core_id]));
-//}
-//
-//void core_enable(int core_id)
-//{
-//    clint_ipi_send(core_id);
-//    atomic_set(&g_wake_up[core_id], 1);
-//}
-//
-//int register_core1(core_function func, void *ctx)
-//{
-//    if(func == NULL)
-//        return -1;
-//    core1_instance.callback = func;
-//    core1_instance.ctx = ctx;
-//    core_enable(1);
-//    return 0;
-//}
-//
-//int __attribute__((weak)) os_entry(int core_id, int number_of_cores, int (*user_main)(int, char**))
-//{
-//    /* Call main if there is no OS */
-//    return user_main(0, 0);
-//}
+void uart_intrpt(void){
+    uarths_puts("i"); 
+    int a = uarths_getc();
+    if(a!=-1)
+        uarths_putchar(a);
+}
 
-//void _init_bsp(int core_id, int number_of_cores)
 void __start(int core_id, int number_of_cores)
 {
-    //extern int main(int argc, char* argv[]);
     extern void __libc_init_array(void);
     extern void __libc_fini_array(void);
-
-
 
     if (core_id == 0)
     {
         init_bss();
+        /* Init external interrupt*/
+        plic_init();
         /* Init UART */
         uarths_init();
         /* Init FPIOA */
         fpioa_init();
 
-        //while(1)
-        {
-            for(int i=0;i<10000000;i++);
-            uarths_puts("Hello world!!\r\n");
-        }
-
         core1_instance.callback = NULL;
         core1_instance.ctx = NULL;
 
-        /* Register finalization function */
-        //atexit(__libc_fini_array);
-        /* Init libc array for C++ */
-        //__libc_init_array();
-
-
-        /* Initialize bss data to 0 */
-        //init_bss();
-        /* Init UART */
-        //uarths_init();
-        /* Init FPIOA */
-        //fpioa_init();
-        /* Register finalization function */
-        //atexit(__libc_fini_array);
-        /* Init libc array for C++ */
-        //__libc_init_array();
-        
         k210_lowsetup();
         uarths_puts("lowersetup\r\n");
         
         /* Do board initialization */
-        
         k210_boardinitialize();
         uarths_puts("boar initialize\r\n");
         
         /* Call nx_start() */
-        /* Init UART */
-        //uarths_init();
-        
         uarths_puts("start nuttx\r\n");
         nx_start();
 
@@ -139,17 +84,7 @@ void __start(int core_id, int number_of_cores)
     else
     {
         while(1);
-        //thread_entry(core_id);
-        //if(core1_instance.callback == NULL)
-        //    asm volatile ("wfi");
-        //else
-        //    ret = core1_instance.callback(core1_instance.ctx);
+        //TODO : dual core
     }
     exit(ret);
 }
-
-//int pthread_setcancelstate(int __state, int *__oldstate)
-//{
-//    return 0;
-//}
-
