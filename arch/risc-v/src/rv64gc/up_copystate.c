@@ -68,7 +68,7 @@
 
 void up_copystate(uint64_t *dest, uint64_t *src)
 {
-  uarths_puts(__func__);
+  //uarths_puts(__func__);
   int i;
 
   /* In the MIPS model, the state is copied from the stack to the TCB,

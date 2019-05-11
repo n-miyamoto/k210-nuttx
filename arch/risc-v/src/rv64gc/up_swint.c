@@ -130,7 +130,7 @@ static void dispatch_syscall(void)
 
 int up_swint(int irq, FAR void *context, FAR void *arg)
 {
-  //:uarths_puts("up swint\r\n");
+  //uarths_puts("up swint\r\n");
   uint64_t *regs = (uint64_t *)context;
 
   DEBUGASSERT(regs && regs == g_current_regs);
@@ -167,6 +167,7 @@ int up_swint(int irq, FAR void *context, FAR void *arg)
 
       case SYS_restore_context:
         {
+          uarths_puts("restore context:\r\n");
           DEBUGASSERT(regs[REG_A1] != 0);
           g_current_regs = (uint64_t *)regs[REG_A1];
         }
@@ -190,13 +191,10 @@ int up_swint(int irq, FAR void *context, FAR void *arg)
 
       case SYS_switch_context:
         {
-          //char str[256];
-          //sprintf(str, "%x, %x\r\n", regs[REG_A1], regs[REG_A2]);
-          //uarths_puts(str);
+          g_current_regs = regs[REG_A2];
           DEBUGASSERT(regs[REG_A1] != 0 && regs[REG_A2] != 0);
           up_copystate((uint64_t*)regs[REG_A1], regs);
-          //up_copystate(regs, (uint64_t*)regs[REG_A2]);
-          g_current_regs = regs[REG_A2];
+          up_copystate((uint64_t*)regs, (uint64_t*)regs[REG_A2]);
         }
         break;
       case 3:

@@ -222,7 +222,6 @@ trap_entry:
   j .restore
 .handle_syscall:
   jal handle_syscall
-
   csrw mepc, a0
   li t0, 0x00006090U
   csrs mstatus, t0
