@@ -191,9 +191,9 @@ int up_swint(int irq, FAR void *context, FAR void *arg)
 
       case SYS_switch_context:
         {
-          g_current_regs = regs[REG_A2];
           DEBUGASSERT(regs[REG_A1] != 0 && regs[REG_A2] != 0);
           up_copystate((uint64_t*)regs[REG_A1], regs);
+          g_current_regs = regs[REG_A2];
           up_copystate((uint64_t*)regs, (uint64_t*)regs[REG_A2]);
         }
         break;

@@ -345,6 +345,7 @@ static void up_shutdown(struct uart_dev_s *dev)
 }
 
 void uart_callback(void){
+  uarths_puts(__func__);
   irq_dispatch(K210_IRQ_UART1_RX , NULL);
 }
 /****************************************************************************
@@ -370,6 +371,7 @@ static int up_attach(struct uart_dev_s *dev)
   /* Initialize interrupt generation on the peripheral */
   //up_serialout(priv, K210_UART_CTRL_REG_OFFSET, IE_RX | IE_TX);
 
+  uarths_init();
   uarths_set_irq(UARTHS_SEND_RECEIVE, uart_callback, NULL, 1023);
   irq_attach(priv->irqrx, up_interrupt, dev);
   irq_attach(priv->irqtx, up_interrupt, dev);
@@ -627,6 +629,8 @@ static void up_rxint(struct uart_dev_s *dev, bool enable)
     }
   priv->im = im;
   leave_critical_section(flags);
+  uarths_puts(__func__);
+  uarths_puts("\r\n");
 }
 
 /****************************************************************************

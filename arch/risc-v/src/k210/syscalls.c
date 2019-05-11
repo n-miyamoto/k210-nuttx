@@ -166,7 +166,6 @@ uintptr_t __attribute__((weak))
 handle_ecall_m(uintptr_t cause, uintptr_t epc, uintptr_t regs[32], uintptr_t fregs[32])
 {
     uint64_t* ptr = (uint64_t*)regs;
-    //uint64_t* ptr2 =(uint64_t*)regs[12];
     char str[256];
     //sprintf(str, "\r\nfin %x %x %d %x %x %d\r\n", epc, ptr ,ptr[10], ptr[11] ,ptr[12], sizeof(uintptr_t));
     g_current_regs = (uint64_t*)regs;

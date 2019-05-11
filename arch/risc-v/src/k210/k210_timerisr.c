@@ -124,11 +124,11 @@ static int k210_systick(int irq, void *context, FAR void *arg)
  *
  ****************************************************************************/
 
-uint64_t up_get_systick(void)
-{
-  //uarths_puts("tick\r\n");
-  return g_systick;
-}
+//uint64_t up_get_systick(void)
+//{
+//  uarths_puts("tick\r\n");
+//  return g_systick;
+//}
 
 /****************************************************************************
  * Function:  riscv_timer_initialize

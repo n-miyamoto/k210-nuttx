@@ -99,6 +99,7 @@ void up_block_task(struct tcb_s *tcb, tstate_t task_state)
 
   sched_addblocked(tcb, (tstate_t)task_state);
 
+  uarths_puts("tr");
   /* If there are any pending tasks, then add them to the ready-to-run
    * task list now
    */
@@ -110,6 +111,7 @@ void up_block_task(struct tcb_s *tcb, tstate_t task_state)
 
   /* Now, perform the context switch if one is needed */
 
+  uarths_puts("head:");
   if (switch_needed)
     {
       /* Update scheduler parameters */
@@ -120,6 +122,7 @@ void up_block_task(struct tcb_s *tcb, tstate_t task_state)
 
       if (g_current_regs)
         {
+  uarths_puts("tr");
           /* Yes, then we have to do things differently.
            * Just copy the g_current_regs into the OLD rtcb.
            */
@@ -147,6 +150,7 @@ void up_block_task(struct tcb_s *tcb, tstate_t task_state)
 
       else
         {
+  uarths_puts("false");
           /* Get the context of the task at the head of the ready to
            * run list.
            */
@@ -168,6 +172,7 @@ void up_block_task(struct tcb_s *tcb, tstate_t task_state)
 
           /* Then switch contexts */
 
+          uarths_puts("sc");
           up_switchcontext(rtcb->xcp.regs, nexttcb->xcp.regs);
           /* up_switchcontext forces a context switch to the task at the
            * head of the ready-to-run list.  It does not 'return' in the
@@ -176,6 +181,6 @@ void up_block_task(struct tcb_s *tcb, tstate_t task_state)
            */
         }
     }
+  uarths_puts("fin ");
   uarths_puts(__func__);
-  while(1);
 }
