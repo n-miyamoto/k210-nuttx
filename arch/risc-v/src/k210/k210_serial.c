@@ -136,6 +136,7 @@ struct up_dev_s
 {
   uintptr_t uartbase; /* Base address of UART registers */
   uint32_t  baud;      /* Configured baud */
+  uarths_rxdata_t recv;
   uint8_t   irqrx;     /* RX IRQ associated with this UART (for enable) */
   uint8_t   irqtx;     /* TX IRQ associated with this UART (for enable) */
   uint8_t   irqprio;   /* Interrupt priority */
@@ -340,15 +341,9 @@ static void up_shutdown(struct uart_dev_s *dev)
   up_disableuartint(dev, NULL);
 
   /* Reset hardware and disable Rx and Tx */
-
-  //nr5_uartreset(priv->uartbase);
 }
 
 void uart_callback(void){
-    //uarths_puts("i");
-    //int a = uarths_getc();
-    //if(a!=-1)
-     //   uarths_putchar(a);
   irq_dispatch(K210_IRQ_UART1_RX , NULL);
 }
 /****************************************************************************
@@ -372,16 +367,11 @@ static int up_attach(struct uart_dev_s *dev)
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
 
   /* Initialize interrupt generation on the peripheral */
-  //up_serialout(priv, K210_UART_CTRL_REG_OFFSET, IE_RX | IE_TX);
 
   uarths_init();
   uarths_set_irq(UARTHS_RECEIVE, uart_callback, NULL, 2);
   irq_attach(priv->irqrx, up_interrupt, dev);
   irq_attach(priv->irqtx, up_interrupt, dev);
-
-  /* Indicate no interrupts active in EPIC */
-
-  priv->im = 0;
 
   return OK;
 }
@@ -406,8 +396,6 @@ static void up_detach(struct uart_dev_s *dev)
   up_disableuartint(dev, NULL);
 
   /* Disable interrupt generation on the peripheral */
-
-  //up_serialout(priv, K210_UART_CTRL_REG_OFFSET, 0);
 
   /* Detach from the interrupt */
 
@@ -454,7 +442,6 @@ static int up_interrupt(int irq, void *context, FAR void *arg)
        * FIFOs or 3 of 4 for 4-deep FIFOS.
        */
 
-      //if (status & K210_UART_RX_IRQ_PENDING)
         {
           /* Process incoming bytes */
 
@@ -477,7 +464,6 @@ static int up_interrupt(int irq, void *context, FAR void *arg)
        * full condition.
        */
 
-      //:if (status & K210_UART_TX_IRQ_PENDING)
         {
           /* Process outgoing bytes */
 
@@ -581,22 +567,11 @@ static int up_ioctl(struct file *filep, int cmd, unsigned long arg)
 
 static int up_receive(struct uart_dev_s *dev, uint32_t *status)
 {
-  //uarths_puts(__func__);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
-
-  /* Return status information */
-
-  //if (status)
-  //  {
-  //    *status = 0; /* We are not yet tracking serial errors */
-  //  }
-
-  /* Then return the actual received byte */
-
-  //return  (int)(up_serialin(priv, K210_UART_RX_REG_OFFSET));
-  int ret = uarths_getc();
-  //uarths_putchar("*");
-  return ret ;
+  if(priv->recv.empty)
+      return -1;
+  else
+    return priv->recv.data & 0xFF;
 }
 
 /****************************************************************************
@@ -633,8 +608,6 @@ static void up_rxint(struct uart_dev_s *dev, bool enable)
     }
   priv->im = im;
   leave_critical_section(flags);
-  //uarths_puts(__func__);
-  //:uarths_puts("\r\n");
 }
 
 /****************************************************************************
@@ -647,13 +620,10 @@ static void up_rxint(struct uart_dev_s *dev, bool enable)
 
 static bool up_rxavailable(struct uart_dev_s *dev)
 {
-  //struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
-
-  /* Return true is data is available in the receive data buffer */
-
-  //return (up_serialin(priv, K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_RX_AVAIL) != 0;
-  return !uarths_rxempty();
-  //return true; 
+  struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
+  priv->recv = get_rxdata();
+  int ret = priv->recv.empty;
+  return !ret;
 }
 
 /****************************************************************************
@@ -680,7 +650,6 @@ static void up_send(struct uart_dev_s *dev, int ch)
 
 static void up_txint(struct uart_dev_s *dev, bool enable)
 {
-  //uarths_puts(__func__);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
   irqstate_t flags;
   uint8_t im;
@@ -724,14 +693,7 @@ static void up_txint(struct uart_dev_s *dev, bool enable)
 
 static bool up_txready(struct uart_dev_s *dev)
 {
-  //uarths_puts(__func__);
-  //:struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
-
-  //return !uarths_txfull();
-  /* Return TRUE if the Transmit buffer register is not full */
-  //return !uarths_txfull();
   return true;
-  //return (up_serialin(priv, K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_TX_EMPTY) != 0;
 }
 
 /****************************************************************************
@@ -744,13 +706,10 @@ static bool up_txready(struct uart_dev_s *dev)
 
 static bool up_txempty(struct uart_dev_s *dev)
 {
-  uarths_puts(__func__);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
-
   /* Return TRUE if the Transmit shift register is empty */
 
   return !uarths_txfull();
-  //return (up_serialin(priv, K210_UART_STATUS_REG_OFFSET) & K210_UART_STATUS_TX_EMPTY) != 0;
 }
 
 /****************************************************************************
@@ -771,10 +730,6 @@ static bool up_txempty(struct uart_dev_s *dev)
 
 void up_earlyserialinit(void)
 {
-  uarths_puts(__func__);
-  /* Disable interrupts from all UARTS.  The console is enabled in
-   * nr5_consoleinit().
-   */
 
   up_disableuartint(&TTYS0_DEV, NULL);
 #ifdef TTYS1_DEV

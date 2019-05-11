@@ -133,15 +133,19 @@ size_t uarths_send_data(const uint8_t *buf, size_t buf_len)
     return write;
 }
 
+uarths_rxdata_t get_rxdata(void){
+    return uarths->rxdata;
+}
+
 int uarths_getc(void)
 {
     /* while not empty */
     uarths_rxdata_t recv = uarths->rxdata;
 
-    //if (recv.empty)
-        //return EOF;
-    //:else
-        return recv.data & 0xFF;
+    if (recv.empty)
+        return EOF;
+    else
+        return uarths->rxdata.data & 0xFF;
 }
 
 int uarths_putchar(char c)
