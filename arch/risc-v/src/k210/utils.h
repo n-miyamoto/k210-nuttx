@@ -282,17 +282,12 @@ extern "C" {
 #define kendryte_replbits_dword(dest, msk, src) \
     (kendryte_write_dword(dest, (kendryte_read_dword(dest) & ~(msk)) | ((src) & (msk))))
 
-#if 1
 #define configASSERT(x)                               \
     if ((x) == 0)                                     \
     {                                                 \
-        //printf("(%s:%d) %s", __FILE__, __LINE__, #x); 
-        uarths_puts(x);\
-        for (;;)                                      \
+        uarths_puts("ASSERT\r\n");\
             ;                                         \
     }
-#endif
-//#define configASSERT(x)   (void)(x)    ;            
 
 /**
  * @brief       Set value by mask

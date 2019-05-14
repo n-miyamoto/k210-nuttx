@@ -35,7 +35,6 @@ void gpio_set_drive_mode(uint8_t pin, gpio_drive_mode_t mode)
     fpioa_pull_t pull;
     uint32_t dir;
 
-  uarths_puts("g\r\n");
     switch (mode)
     {
     case GPIO_DM_INPUT:
@@ -58,9 +57,9 @@ void gpio_set_drive_mode(uint8_t pin, gpio_drive_mode_t mode)
         configASSERT(!"GPIO drive mode is not supported.") break;
     }
 
+
     fpioa_set_io_pull(io_number, pull);
     set_gpio_bit(gpio->direction.u32, pin, dir);
-  uarths_puts("g\r\n");
 }
 
 gpio_pin_value_t gpio_get_pin(uint8_t pin)
