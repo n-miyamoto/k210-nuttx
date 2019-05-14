@@ -43,6 +43,8 @@
 
 #include <arch/board/board.h>
 
+#include "gpio.h"
+
 /************************************************************************************
  * Pre-processor Definitions
  ************************************************************************************/
@@ -67,11 +69,21 @@
 
 void board_autoled_on(int led)
 {
+  int r,g,b;
+  r=3;g=2;b=1;
 
+  gpio_set_pin(r, 0);
+  gpio_set_pin(g, 0);
+  gpio_set_pin(b, 0);
 }
 
 
 void board_autoled_off(int led)
 {
+  int r,g,b;
+  r=3;g=2;b=1;
 
+  gpio_set_pin(r, (led>>0)&1);
+  gpio_set_pin(g, (led>>1)&1);
+  gpio_set_pin(b, (led>>2)&1);
 }

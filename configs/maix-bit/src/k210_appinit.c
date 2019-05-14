@@ -47,6 +47,8 @@
 #include <nuttx/board.h>
 
 #include "k210.h"
+#include "gpio.h"
+#include "fpioa.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -81,6 +83,24 @@
 
 int board_app_initialize(uintptr_t arg)
 {
+  
+  fpioa_set_function(12, FUNC_GPIO1);
+  fpioa_set_function(13, FUNC_GPIO2);
+  fpioa_set_function(14, FUNC_GPIO3);
+  gpio_init();
+  int r,g,b;
+  r=3;g=2;b=1;
+  gpio_set_drive_mode(r, GPIO_DM_OUTPUT);
+  gpio_set_drive_mode(g, GPIO_DM_OUTPUT);
+  gpio_set_drive_mode(b, GPIO_DM_OUTPUT);
+  gpio_pin_value_t value = GPIO_PV_HIGH;
+  gpio_set_pin(r, value);
+  gpio_set_pin(g, value);
+  gpio_set_pin(b, value);
 
+  //gpio_set_pin(r,0);
+  //gpio_set_pin(g,0);
+  //gpio_set_pin(b,0);
+  
   return OK;
 }
