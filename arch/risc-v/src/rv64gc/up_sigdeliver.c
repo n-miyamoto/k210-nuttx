@@ -113,7 +113,7 @@ void up_sigdeliver(void)
    * errno that is needed by the user logic (it is probably EINTR).
    */
 
-  sinfo("Resuming EPC: %08x INT_CTX: %08x\n", regs[REG_EPC], regs[REG_INT_CTX]);
+  // sinfo("Resuming EPC: %08x INT_CTX: %08x\n", regs[REG_EPC], regs[REG_INT_CTX]);
 
   (void)up_irq_save();
   rtcb->pterrno        = saved_errno;
@@ -129,7 +129,7 @@ void up_sigdeliver(void)
    */
 
   regs[REG_EPC]        = rtcb->xcp.saved_epc;
-  regs[REG_INT_CTX]    = rtcb->xcp.saved_int_ctx;
+  //regs[REG_INT_CTX]    = rtcb->xcp.saved_int_ctx;
   rtcb->xcp.sigdeliver = NULL;  /* Allows next handler to be scheduled */
 
   /* Then restore the correct state for this thread of

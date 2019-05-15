@@ -66,11 +66,11 @@ CMN_CSRCS  += up_vfork.c
 endif
 
 # Specify our C code within this directory to be included
-CHIP_CSRCS  = k210_init.c k210_arch.c 
+CHIP_CSRCS  = k210_arch.c 
 CHIP_CSRCS += k210_lowputc.c k210_allocateheap.c k210_serial.c
 CHIP_CSRCS += k210_timerisr.c k210_irq.c k210_irq_dispatch.c
 CHIP_CSRCS += entry_user.c interrupt.c syscalls.c
-CHIP_CSRCS += uarths.c plic.c sysctl.c fpioa.c clint.c
+CHIP_CSRCS += uarths.c plic.c sysctl.c fpioa.c clint.c gpio.c utils.c
 
 ifeq ($(CONFIG_TIMER),y)
 CHIP_CSRCS += k210_tim_lowerhalf.c -lm

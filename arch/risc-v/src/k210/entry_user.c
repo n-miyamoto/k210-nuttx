@@ -20,6 +20,8 @@
 #include "sysctl.h"
 #include "uarths.h"
 #include "k210.h"
+#include "gpio.h"
+
 
 
 extern volatile uint64_t g_wake_up[2];
@@ -33,12 +35,6 @@ extern char _tbss[];
 extern char _heap_start[];
 extern char _heap_end[];
 
-void uart_intrpt(void){
-    uarths_puts("i"); 
-    int a = uarths_getc();
-    if(a!=-1)
-        uarths_putchar(a);
-}
 
 void __start(int core_id, int number_of_cores)
 {
@@ -55,12 +51,13 @@ void __start(int core_id, int number_of_cores)
         /* Init FPIOA */
         fpioa_init();
 
+       
         core1_instance.callback = NULL;
         core1_instance.ctx = NULL;
 
         k210_lowsetup();
-        uarths_puts("lowersetup\r\n");
-        
+        board_app_initialize();
+
         /* Do board initialization */
         k210_boardinitialize();
         uarths_puts("boar initialize\r\n");
