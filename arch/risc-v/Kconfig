@@ -24,8 +24,9 @@ config ARCH_CHIP_GAP8
 		processor, which originally comes from the ETH PULP platform.
 
 config ARCH_CHIP_K210
-	bool "NEXT K210"
+	bool "kendryte K210"
 	select ARCH_RV64GC
+	select ARCH_HAVE_MULTICPU
 	---help---
 		NEXT RISC-V K210 (RISC-V RV64GC cores).
 
