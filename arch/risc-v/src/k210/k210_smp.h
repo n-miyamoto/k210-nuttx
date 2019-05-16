@@ -81,6 +81,8 @@ int up_cpu_start(int cpu);
 int up_cpu_pause(int cpu);
 int up_cpu_paused(int cpu);
 int up_cpu_resume(int cpu);
+int up_cpu_idlestack(int cpu, FAR struct tcb_s *tcb, size_t stack_size);
+bool up_cpu_pausereq(int cpu);
 
 
 #undef EXTERN

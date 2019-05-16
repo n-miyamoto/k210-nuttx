@@ -19,6 +19,7 @@
 #include "platform.h"
 #include "sysctl.h"
 #include "uarths.h"
+#include "atomic.h"
 #include "k210.h"
 
 
@@ -33,11 +34,25 @@ extern char _tbss[];
 extern char _heap_start[];
 extern char _heap_end[];
 
-void uart_intrpt(void){
-    uarths_puts("i"); 
-    int a = uarths_getc();
-    if(a!=-1)
-        uarths_putchar(a);
+void core_enable(int core_id)
+{
+    clint_ipi_send(core_id);
+    atomic_set(&g_wake_up[core_id], 1);
+}
+
+int register_core1(core_function func, void *ctx)
+{
+    if(func == NULL)
+        return -1;
+    core1_instance.callback = func;
+    core1_instance.ctx = ctx;
+    core_enable(1);
+    return 0;
+}
+
+void thread_entry(int core_id)
+{
+    while (!atomic_read(&g_wake_up[core_id]));
 }
 
 void __start(int core_id, int number_of_cores)
@@ -83,8 +98,13 @@ void __start(int core_id, int number_of_cores)
     }
     else
     {
-        while(1);
+        //while(1);
         //TODO : dual core
+        thread_entry(core_id);
+        if(core1_instance.callback == NULL)
+            asm volatile ("wfi");
+        else
+            ret = core1_instance.callback(core1_instance.ctx);
     }
     exit(ret);
 }

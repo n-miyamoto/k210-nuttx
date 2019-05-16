@@ -44,10 +44,17 @@
 
 #include <nuttx/config.h>
 
+#include <nuttx/arch.h>
 #include <stdint.h>
 
 #include <arch/board/board.h>
 #include <arch/spinlock.h>
+
+#include <nuttx/arch.h>
+#include <nuttx/sched.h>
+#include <nuttx/spinlock.h>
+#include <nuttx/sched_note.h>
+
 
 #include "up_internal.h"
 #include "up_arch.h"
@@ -55,6 +62,9 @@
 #include "k210_config.h"
 #include "k210.h"
 #include "k210_smp.h"
+#include "encoding.h"
+
+//#include "atomic.h"
 
 /**************************************************************************
  * Pre-processor Definitions
@@ -71,6 +81,8 @@
 /**************************************************************************
  * Global Variables
  **************************************************************************/
+static volatile bool g_appcpu_started;
+static volatile spinlock_t g_appcpu_interlock;
 
 /**************************************************************************
  * Private Variables
@@ -91,16 +103,52 @@
  *   return cpu index number
  *
  **************************************************************************/
-
-int up_cpu_index(void){
+int k210_app_cpustart(void){
+    uarths_puts("hello from core1 \r\n");
+    while(1);
     return 0;
 }
+int up_cpu_index(void){
+    return current_coreid();
+}
 
+spinlock_t up_testset(volatile FAR spinlock_t *lock){return 0;}
 
-spinlock_t up_testset(volatile FAR spinlock_t *lock){}
-int up_cpu_start(int cpu){}
-//int up_cpu_paused(int cpu){}
-int up_cpu_pause(int cpu){}
-int up_cpu_resume(int cpu){}
+int up_cpu_start(int cpu){
+    DEBUGASSERT(cpu >= 0 && cpu < CONFIG_SMP_NCPUS && cpu != this_cpu());
+    if (!g_appcpu_started){
+        uint32_t regval;
 
+        /* Start CPU1 */
 
+        sinfo("Starting CPU%d\n", cpu);
+
+#ifdef CONFIG_SCHED_INSTRUMENTATION
+        /* Notify of the start event */
+
+        sched_note_cpu_start(this_task(), cpu);
+#endif
+
+        /* The waitsem semaphore is used for signaling and, hence, should not
+         * have priority inheritance enabled.
+         */
+
+        spin_initialize(&g_appcpu_interlock, SP_LOCKED);
+
+        //app start 
+        uarths_puts("before app start\r\n");
+        register_core1(k210_app_cpustart, NULL);
+        spin_lock(&g_appcpu_interlock);
+        uarths_puts("after app start\r\n");
+        DEBUGASSERT(g_appcpu_started);
+    }
+    return OK;
+}
+
+int up_cpu_paused(int cpu){return 0;}
+int up_cpu_pause(int cpu){return 0;}
+int up_cpu_resume(int cpu){return 0;}
+int up_cpu_idlestack(int cpu, FAR struct tcb_s *tcb, size_t stack_size){return 0;}
+bool up_cpu_pausereq(int cpu){
+    return 0;
+}

@@ -55,11 +55,11 @@ extern "C" {
 typedef struct _spinlock
 {
     int lock;
-} spinlock_t;
+} spinlock_t_;
 
 typedef struct _semaphore
 {
-    spinlock_t lock;
+    spinlock_t_ lock;
     int count;
     int waiting;
 } semaphore_t;
@@ -67,12 +67,12 @@ typedef struct _semaphore
 
 typedef struct _corelock
 {
-    spinlock_t lock;
+    spinlock_t_ lock;
     int count;
     int core;
 } corelock_t;
 
-static inline int spinlock_trylock(spinlock_t *lock)
+static inline int spintlock_trylock(spinlock_t_ *lock)
 {
     int res = atomic_swap(&lock->lock, -1);
     /* Use memory barrier to keep coherency */
@@ -80,12 +80,12 @@ static inline int spinlock_trylock(spinlock_t *lock)
     return res;
 }
 
-static inline void spinlock_lock(spinlock_t *lock)
+static inline void spinlock_lock(spinlock_t_ *lock)
 {
-    while (spinlock_trylock(lock));
+    while (spintlock_trylock(lock));
 }
 
-static inline void spinlock_unlock(spinlock_t *lock)
+static inline void spinlock_unlock(spinlock_t_ *lock)
 {
     /* Use memory barrier to keep coherency */
     mb();
@@ -139,7 +139,7 @@ static inline int corelock_trylock(corelock_t *lock)
 
     asm volatile("csrr %0, mhartid;"
                  : "=r"(core));
-    if(spinlock_trylock(&lock->lock))
+    if(spintlock_trylock(&lock->lock))
     {
         return -1;
     }
