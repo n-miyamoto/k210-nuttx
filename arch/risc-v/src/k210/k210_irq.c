@@ -77,6 +77,8 @@ volatile uintptr_t *g_current_regs;
 
 void up_irqinitialize(void)
 {
+  int cpu = up_cpu_index();
+  uarths_puts("up irq\r\n");
   irq_attach(K210_IRQ_SOFTWARE, up_swint, NULL);
   up_enable_irq(K210_IRQ_SOFTWARE);
 }
@@ -108,7 +110,18 @@ static inline uint32_t _current_privilege(void)
 
 void up_disable_irq(int irq)
 {
-  //TODO
+  switch(irq){
+    case K210_IRQ_SYSTICK:
+      clint_timer_stop();
+      break;
+    case K210_IRQ_SOFTWARE:
+      break;
+    case K210_IRQ_CPU_CPU0:
+      clint_ipi_disable();
+      break;
+    default:
+      break;
+  } //TODO
 }
 
 /****************************************************************************
@@ -126,6 +139,13 @@ void up_enable_irq(int irq)
       clint_timer_start(10,0); //todo fix 10
       break;
     case K210_IRQ_SOFTWARE:
+      break;
+    case K210_IRQ_UART1_RX:
+      break;
+    case K210_IRQ_UART1_TX:
+      break;
+    case K210_IRQ_CPU_CPU0:
+      clint_ipi_enable();
       break;
     default:
       break;

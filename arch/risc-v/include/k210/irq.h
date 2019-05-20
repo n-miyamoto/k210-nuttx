@@ -43,9 +43,9 @@
  ****************************************************************************/
 #define  K210_IRQ_TRAP      0
 
-#define  EPIC_STATUS_PRI_MASK       0x001C
-#define  EPIC_STATUS_INT_PRI_MASK   0x01C0
-#define  EPIC_STATUS_INT_PRI1       0x0040
+//#define  EPIC_STATUS_PRI_MASK       0x001C
+//#define  EPIC_STATUS_INT_PRI_MASK   0x01C0
+//#define  EPIC_STATUS_INT_PRI1       0x0040
 
 #define  K210_IRQ_SYSTICK     1
 #define  K210_IRQ_TIMER       2
@@ -57,8 +57,10 @@
 #define  K210_IRQ_TIMER1_B    8
 #define  K210_IRQ_TIMER2_A    9
 #define  K210_IRQ_TIMER2_B    10
+#define  K210_IRQ_CPU_CPU0    11
+#define  K210_IRQ_CPU_CPU1    12
 
-#define  NR_IRQS             11
+#define  NR_IRQS              13
 
 
 /****************************************************************************
