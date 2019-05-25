@@ -158,8 +158,8 @@ void up_schedule_sigaction(struct tcb_s *tcb, sig_deliver_t sigdeliver)
 
               g_current_regs[REG_EPC]     = (uint32_t)up_sigdeliver;
               //int_ctx                     = g_current_regs[REG_INT_CTX];
-              int_ctx                     &= ~EPIC_STATUS_INT_PRI_MASK;
-              int_ctx                     |= EPIC_STATUS_INT_PRI1;
+              //int_ctx                     &= ~EPIC_STATUS_INT_PRI_MASK;
+              //int_ctx                     |= EPIC_STATUS_INT_PRI1;
               //:wg_current_regs[REG_INT_CTX] = int_ctx;
 
               /* And make sure that the saved context in the TCB
@@ -197,8 +197,8 @@ void up_schedule_sigaction(struct tcb_s *tcb, sig_deliver_t sigdeliver)
 
           tcb->xcp.regs[REG_EPC]      = (uint32_t)up_sigdeliver;
           //int_ctx                     = tcb->xcp.regs[REG_INT_CTX];
-          int_ctx                     &= ~EPIC_STATUS_INT_PRI_MASK;
-          int_ctx                     |= EPIC_STATUS_INT_PRI1;
+          //int_ctx                     &= ~EPIC_STATUS_INT_PRI_MASK;
+          //int_ctx                     |= EPIC_STATUS_INT_PRI1;
           //tcb->xcp.regs[REG_INT_CTX]  = int_ctx;
 
           sinfo("PC/STATUS Saved: %08x/%08x New: %08x/%08x\n",

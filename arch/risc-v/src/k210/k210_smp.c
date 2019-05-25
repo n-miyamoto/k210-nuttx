@@ -114,6 +114,7 @@ int k210_cpuint_initialize(void){
 
 #ifdef CONFIG_SMP
 void k210_fromcpu0_interrupt(void){
+    uarths_puts(__func__);
   FAR struct tcb_s *otcb = this_task();
   FAR struct tcb_s *ntcb;
   int cpu = 0
@@ -164,7 +165,9 @@ void k210_fromcpu0_interrupt(void){
   return OK;
 }
 void interrupt_fromcpu0_callback(void){
+    uarths_puts("\r\n");
     uarths_puts(__func__);
+    uarths_puts("\r\n");
     irq_dispatch(K210_IRQ_CPU_CPU0, NULL);
 }
 
@@ -241,7 +244,7 @@ int k210_appcpu_start(void){
 }
 
 int up_cpu_index(void){
-    return current_coreid();
+//    return current_coreid();
 }
 
 spinlock_t up_testset(volatile FAR spinlock_t *lock){return 0;}
@@ -278,9 +281,19 @@ int up_cpu_start(int cpu){
 }
 
 int up_cpu_paused(int cpu){return 0;}
-int up_cpu_pause(int cpu){return 0;}
-int up_cpu_resume(int cpu){return 0;}
-int up_cpu_idlestack(int cpu, FAR struct tcb_s *tcb, size_t stack_size){return 0;}
+int up_cpu_pause(int cpu){
+    uarths_puts(__func__);
+    return 0;
+}
+int up_cpu_resume(int cpu){
+    uarths_puts(__func__);
+    return 0;
+}
+int up_cpu_idlestack(int cpu, FAR struct tcb_s *tcb, size_t stack_size){
+    uarths_puts(__func__);
+    return 0;
+}
 bool up_cpu_pausereq(int cpu){
+    uarths_puts(__func__);
     return 0;
 }
